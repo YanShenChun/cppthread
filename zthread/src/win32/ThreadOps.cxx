@@ -52,7 +52,7 @@ public:
        // this function being called as FreeLibrary() completes; however 
        // nearly all win32 applications load this particular and will keep it
        // in memory until the process exits.
-       HINSTANCE hInst = ::GetModuleHandle("Kernel32.dll");
+       HINSTANCE hInst = ::GetModuleHandleW(L"Kernel32.dll");
        if(hInst != NULL)
          _fnYield = (Yield)::GetProcAddress(hInst, "SwitchToThread");
 
