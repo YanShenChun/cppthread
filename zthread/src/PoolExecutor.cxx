@@ -363,6 +363,7 @@ namespace ZThread {
     };
 
     typedef CountedPtr<GroupedRunnable, size_t> ExecutorTask;
+  }
 
     /**
      *
@@ -508,6 +509,7 @@ namespace ZThread {
 
     };
 
+  namespace {
     //! Executor job
     class Worker : public Runnable {
 

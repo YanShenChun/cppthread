@@ -300,7 +300,7 @@ namespace ZThread {
       }
 
     };
-
+  }
     //! Synchronization point for the Executor 
     class ExecutorImpl {
 
@@ -377,6 +377,7 @@ namespace ZThread {
 
     }; /* ExecutorImpl */
 
+  namespace {
     //! Wrap a generation and a group around a task
     class Worker : public Runnable {
 

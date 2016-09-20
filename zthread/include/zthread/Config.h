@@ -158,9 +158,17 @@
 #else
 
 #  if defined(ZTHREAD_IMPORTS) 
+#  if defined(ZT_WIN32)
 #    define ZTHREAD_API __declspec(dllimport)
+#  else
+#    define ZTHREAD_API
+#  endif
 #  elif defined(ZTHREAD_EXPORTS) 
+#  if defined(ZT_WIN32)
 #    define ZTHREAD_API __declspec(dllexport)
+#  else
+#    define ZTHREAD_API
+#  endif
 #  else
 #    define ZTHREAD_API 
 #  endif

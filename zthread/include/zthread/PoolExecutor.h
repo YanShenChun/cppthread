@@ -29,7 +29,7 @@
 
 namespace ZThread {
   
-  namespace { class ExecutorImpl; }
+  class ExecutorImpl;
 
   /**
    * @class PoolExecutor

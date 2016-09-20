@@ -61,7 +61,7 @@ namespace ZThread {
 
     if(_waiters.size() > 0) { 
 
-      ZTDEBUG("** You are destroying a mutex which is blocking %d threads. **\n", _waiters.size());
+      ZTDEBUG("** You are destroying a mutex which is blocking %zd threads. **\n", _waiters.size());
       assert(0); // Destroyed mutex while in use
 
     }
