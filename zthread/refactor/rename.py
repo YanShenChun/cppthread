@@ -26,6 +26,8 @@ def refactor_file(file_path):
     def header_repl_func(match):
         header_name = "_".join([s.group(0).lower()  for s in
              re.finditer(r"[A-Z][a-z]+", match.group("header_name"))])
+        if not header_name:
+            header_name = match.group("header_name").lower()
         return "".join([match.group("prefix"), header_name, ".h"])
 
     def ns_repl_func(match):
@@ -33,7 +35,7 @@ def refactor_file(file_path):
 
     def rename_func(line):
         # Heade file: CamelCase -> Underline 
-        result = re.sub(r'(?P<prefix>#\s*include\s+"(\w+/)*)(?P<header_name>\w+)\.h',
+        result = re.sub(r'(?P<prefix>#\s*include\s+"([^/]+/)*)(?P<header_name>\w+)\.h',
             header_repl_func, line)
         # namespace: tolower
         result = re.sub(r'(?P<prefix>^\s*namespace\s+)(?P<ns_name>\w+)', ns_repl_func,
