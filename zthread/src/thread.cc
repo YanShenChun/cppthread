@@ -45,9 +45,9 @@ bool Thread::operator==(const Thread& t) const { return (t._impl == _impl); }
 
 Thread::~Thread() { _impl->delReference(); }
 
-void Thread::wait() { _impl->join(0); }
+void Thread::Wait() { _impl->join(0); }
 
-bool Thread::wait(unsigned long timeout) {
+bool Thread::Wait(unsigned long timeout) {
   return _impl->join(timeout == 0 ? 1 : timeout);
 }
 

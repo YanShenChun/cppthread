@@ -512,9 +512,9 @@ void PoolExecutor::cancel() { _impl->cancel(); }
 
 bool PoolExecutor::isCanceled() { return _impl->isCanceled(); }
 
-void PoolExecutor::wait() { _impl->wait(0); }
+void PoolExecutor::Wait() { _impl->wait(0); }
 
-bool PoolExecutor::wait(unsigned long timeout) {
+bool PoolExecutor::Wait(unsigned long timeout) {
   return _impl->wait(timeout == 0 ? 1 : timeout);
 }
 }

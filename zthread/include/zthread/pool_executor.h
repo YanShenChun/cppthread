@@ -151,7 +151,7 @@ class PoolExecutor : public Executor {
    *
    * @see Waitable::wait()
    */
-  virtual void wait();
+  virtual void Wait();
 
   /**
    * Block the calling thread until all tasks submitted prior to this invocation
@@ -171,7 +171,7 @@ class PoolExecutor : public Executor {
    *
    * @see Waitable::wait(unsigned long timeout)
    */
-  virtual bool wait(unsigned long timeout);
+  virtual bool Wait(unsigned long timeout);
 
 }; /* PoolExecutor */
 

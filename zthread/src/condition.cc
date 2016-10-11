@@ -40,9 +40,9 @@ Condition::~Condition() {
   if (_impl != 0) delete _impl;
 }
 
-void Condition::wait() { _impl->wait(); }
+void Condition::Wait() { _impl->wait(); }
 
-bool Condition::wait(unsigned long ms) { return _impl->wait(ms); }
+bool Condition::Wait(unsigned long ms) { return _impl->wait(ms); }
 
 void Condition::signal() { _impl->signal(); }
 

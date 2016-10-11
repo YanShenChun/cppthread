@@ -132,7 +132,7 @@ class ZTHREAD_API Condition : public Waitable, private NonCopyable {
    *
    * @see Waitable::wait()
    */
-  virtual void wait();
+  virtual void Wait();
 
   /**
    * Wait for this Condition, blocking the calling thread until a signal or
@@ -166,7 +166,7 @@ class ZTHREAD_API Condition : public Waitable, private NonCopyable {
    *
    * @see Waitable::wait(unsigned long timeout)
    */
-  virtual bool wait(unsigned long timeout);
+  virtual bool Wait(unsigned long timeout);
 };
 
 }  // namespace ZThread

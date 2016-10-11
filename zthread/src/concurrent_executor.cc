@@ -38,9 +38,9 @@ void ConcurrentExecutor::cancel() { _executor.cancel(); }
 
 bool ConcurrentExecutor::isCanceled() { return _executor.isCanceled(); }
 
-void ConcurrentExecutor::wait() { _executor.wait(); }
+void ConcurrentExecutor::wait() { _executor.Wait(); }
 
 bool ConcurrentExecutor::wait(unsigned long timeout) {
-  return _executor.wait(timeout);
+  return _executor.Wait(timeout);
 }
 }

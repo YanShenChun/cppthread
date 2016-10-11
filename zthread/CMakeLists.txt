@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 project(zthread)
+set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_definitions(-DZT_WIN32 -DUNICODE -D_UNICODE)

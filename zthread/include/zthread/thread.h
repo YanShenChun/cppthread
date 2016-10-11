@@ -243,7 +243,7 @@ class ZTHREAD_API Thread : public Cancelable,
    * @exception Interrupted_Exception thrown if the joining thread has been
    * interrupt()ed
    */
-  void wait();
+  void Wait();
 
   /**
    * Wait for the thread represented by this object to complete its task.
@@ -263,7 +263,7 @@ class ZTHREAD_API Thread : public Cancelable,
    * @exception Interrupted_Exception thrown if the joining thread has been
    * interrupt()ed
    */
-  bool wait(unsigned long timeout);
+  bool Wait(unsigned long timeout);
 
   /**
    * Change the priority of this Thread. This will change the actual

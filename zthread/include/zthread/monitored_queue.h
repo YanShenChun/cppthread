@@ -168,7 +168,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
   virtual T next() {
     Guard<LockType> g(_lock);
 
-    while (_queue.size() == 0 && !_canceled) _notEmpty.wait();
+    while (_queue.size() == 0 && !_canceled) _notEmpty.Wait();
 
     if (_queue.size() == 0)  // Queue canceled
       throw Cancellation_Exception();
@@ -206,7 +206,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock, timeout);
 
     while (_queue.size() == 0 && !_canceled) {
-      if (!_notEmpty.wait(timeout)) throw Timeout_Exception();
+      if (!_notEmpty.Wait(timeout)) throw Timeout_Exception();
     }
 
     if (_queue.size() == 0)  // Queue canceled
@@ -280,7 +280,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock);
 
     while (_queue.size() > 0)  // Wait for an empty signal
-      _isEmpty.wait();
+      _isEmpty.Wait();
 
     return true;
   }
@@ -307,7 +307,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock, timeout);
 
     while (_queue.size() > 0)  // Wait for an empty signal
-      _isEmpty.wait(timeout);
+      _isEmpty.Wait(timeout);
 
     return true;
   }
