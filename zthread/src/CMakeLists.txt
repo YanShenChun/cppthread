@@ -7,6 +7,6 @@ file(GLOB SRCS
     ${PROJECT_SOURCE_DIR}/src/*.cc
 )
 
-add_library(zthead SHARED ${SRCS})
+add_library(zthread SHARED ${SRCS})
 
 

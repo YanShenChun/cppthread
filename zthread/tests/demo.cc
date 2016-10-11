@@ -1,6 +1,6 @@
 #include <iostream>
 //#include <zthread.h>
-#include <thread.h>
+#include <zthread/thread.h>
 
 class Func1 : public zthread::Runnable {
   public:

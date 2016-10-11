@@ -6,6 +6,7 @@ file(GLOB SRCS
 )
 
 add_executable(demo ${SRCS})
-target_link_libraries(zthread)
+#target_link_libraries(demo ${PROJECT_BINARY_DIR}/build/lib/libzthread.dylib)
+target_link_libraries(demo zthread)
 
 

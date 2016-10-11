@@ -15,5 +15,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()
 endif()
 
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(src)
+add_subdirectory(tests)
