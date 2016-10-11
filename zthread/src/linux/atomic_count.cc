@@ -27,36 +27,38 @@
 #ifndef __ZTATOMICCOUNTIMPL_H__
 #define __ZTATOMICCOUNTIMPL_H__
 
-#include <asm/atomic.h>
+//#include <pthread.h>
 #include <assert.h>
 
 namespace zthread {
 
-typedef struct atomic_count_t {
-  atomic_t count;
+AtomicCount::AtomicCount() { _value = reinterpret_cast<void*>(new long(0)); }
 
-  atomic_count_t() {
-    atomic_t init = ATOMIC_INIT(0);
-    count = init;
-  }
-
-  ~atomic_count_t() { assert(atomic_read(&count) == 0); }
-
-} ATOMIC_COUNT;
-
-AtomicCount::AtomicCount() {
-  _value = reinterpret_cast<void*>(new ATOMIC_COUNT);
+AtomicCount::~AtomicCount() {
+  assert(*reinterpret_cast<long*>(_value) == 0);
+  delete reinterpret_cast<long*>(_value);
 }
 
-AtomicCount::~AtomicCount() { delete reinterpret_cast<ATOMIC_COUNT*>(_value); }
-
-void AtomicCount::increment() {
-  atomic_inc(&reinterpret_cast<ATOMIC_COUNT*>(_value)->count);
+//! Postfix decrement and return the previous value
+size_t AtomicCount::operator--(int) {
+	return __sync_fetch_and_sub(reinterpret_cast<long*>(_value), 1);
 }
 
-bool AtomicCount::decrement() {
-  return atomic_dec_and_test(&reinterpret_cast<ATOMIC_COUNT*>(_value)->count);
+//! Postfix increment and return the previous value
+size_t AtomicCount::operator++(int) {
+	return __sync_fetch_and_add(reinterpret_cast<long*>(_value), 1);
 }
+
+//! Prefix decrement and return the current value
+size_t AtomicCount::operator--() {
+	return __sync_sub_and_fetch(reinterpret_cast<long*>(_value), 1);
+}
+
+//! Prefix increment and return the current value
+size_t AtomicCount::operator++() {
+	return __sync_add_and_fetch(reinterpret_cast<long*>(_value), 1);
+}
+
 };
 
 #endif  // __ZTATOMICCOUNTIMPL_H__

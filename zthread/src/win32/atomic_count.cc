@@ -39,13 +39,13 @@ AtomicCount::~AtomicCount() {
   delete reinterpret_cast<LPLONG>(_value);
 }
 
-//! Postfix decrement and return the current value
+//! Postfix decrement and return the previous value
 size_t AtomicCount::operator--(int) {
 	LONG v = ::InterlockedDecrement(reinterpret_cast<LPLONG>(_value));
 	return ++v;
 }
 
-//! Postfix increment and return the current value
+//! Postfix increment and return the previous value
 size_t AtomicCount::operator++(int) {
 	LONG v = ::InterlockedIncrement(reinterpret_cast<LPLONG>(_value));
 	return --v;

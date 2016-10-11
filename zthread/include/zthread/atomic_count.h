@@ -55,10 +55,10 @@ class ZTHREAD_API AtomicCount : public NonCopyable {
   //! Destroy a new AtomicCount
   ~AtomicCount();
 
-  //! Postfix decrement and return the current value
+  //! Postfix decrement and return the previous value
   size_t operator--(int);
 
-  //! Postfix increment and return the current value
+  //! Postfix increment and return the previous value
   size_t operator++(int);
 
   //! Prefix decrement and return the current value
