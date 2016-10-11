@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -23,13 +27,12 @@
 #ifndef __ZTFASTRECURSIVELOCK_H__
 #define __ZTFASTRECURSIVELOCK_H__
 
+#include <assert.h>
+#include <windows.h>
 #include "zthread/exceptions.h"
 #include "zthread/non_copyable.h"
-#include <windows.h>
-#include <assert.h>
 
 namespace zthread {
-
 
 /**
  * @class FastRecursiveLock
@@ -39,56 +42,42 @@ namespace zthread {
  * @version 2.2.11
  *
  * This FastRecursiveLock implementation is based on a Win32 Mutex
- * object. This will perform better under high contention, 
+ * object. This will perform better under high contention,
  * but will not be as fast as the spin lock under reasonable
  * circumstances.
- */ 
+ */
 class FastRecursiveLock : private NonCopyable {
-
   HANDLE _hMutex;
   volatile unsigned int _count;
 
-  public:
-  
+ public:
   /**
    * Create a new FastRecursiveLock
    */
-  FastRecursiveLock() : _count(0) { 
-
+  FastRecursiveLock() : _count(0) {
     _hMutex = ::CreateMutex(0, 0, 0);
     assert(_hMutex != NULL);
-    if(_hMutex == NULL)
-      throw Initialization_Exception();
-
+    if (_hMutex == NULL) throw Initialization_Exception();
   }
 
-  
-  ~FastRecursiveLock() {
-    ::CloseHandle(_hMutex);
-  }
+  ~FastRecursiveLock() { ::CloseHandle(_hMutex); }
 
-  
   void acquire() {
-
-    if(::WaitForSingleObject(_hMutex, INFINITE) != WAIT_OBJECT_0) {
+    if (::WaitForSingleObject(_hMutex, INFINITE) != WAIT_OBJECT_0) {
       assert(0);
       throw Synchronization_Exception();
     }
-
   }
 
   void release() {
-
-    if(::ReleaseMutex(_hMutex) == 0) {
+    if (::ReleaseMutex(_hMutex) == 0) {
       assert(0);
       throw Synchronization_Exception();
     }
-
   }
 
   bool tryAcquire(unsigned long) {
-
-    switch(::WaitForSingleObject(_hMutex, 0)) {
+    switch (::WaitForSingleObject(_hMutex, 0)) {
       case WAIT_OBJECT_0:
         return true;
       case WAIT_TIMEOUT:
@@ -99,11 +88,10 @@ class FastRecursiveLock : private NonCopyable {
 
     assert(0);
     throw Synchronization_Exception();
-
   }
 
 }; /* FastRecursiveLock */
 
-} // namespace ZThread
+}  // namespace ZThread
 
 #endif

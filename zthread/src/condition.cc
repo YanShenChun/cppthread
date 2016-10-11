@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -25,56 +29,23 @@
 
 namespace zthread {
 
-  class FifoConditionImpl : public ConditionImpl<fifo_list> {
-  public:
-    FifoConditionImpl(Lockable& l) : ConditionImpl<fifo_list>(l) {}
+class FifoConditionImpl : public ConditionImpl<fifo_list> {
+ public:
+  FifoConditionImpl(Lockable& l) : ConditionImpl<fifo_list>(l) {}
+};
 
-  };
+Condition::Condition(Lockable& lock) { _impl = new FifoConditionImpl(lock); }
 
-  Condition::Condition(Lockable& lock) {
-  
-    _impl = new FifoConditionImpl(lock);
+Condition::~Condition() {
+  if (_impl != 0) delete _impl;
+}
 
-  }
+void Condition::wait() { _impl->wait(); }
 
+bool Condition::wait(unsigned long ms) { return _impl->wait(ms); }
 
-  Condition::~Condition() {
-  
-    if(_impl != 0)
-      delete _impl;
+void Condition::signal() { _impl->signal(); }
 
-  }
+void Condition::broadcast() { _impl->broadcast(); }
 
-
-
-  void Condition::wait() {
-
-    _impl->wait();
-
-  }
-
-
-
-  bool Condition::wait(unsigned long ms) {
-
-    return _impl->wait(ms);
-
-  }
-
-
-
-  void Condition::signal() {
-  
-    _impl->signal();
-
-  }
-
-
-  void Condition::broadcast() {
-
-    _impl->broadcast();
-
-  }
-
-} // namespace ZThread
-
+}  // namespace ZThread

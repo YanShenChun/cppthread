@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -23,8 +27,8 @@
 #ifndef __ZTINTRUSIVEPTR_H__
 #define __ZTINTRUSIVEPTR_H__
 
-#include "zthread/guard.h"
 #include <cstdlib>
+#include "zthread/guard.h"
 
 namespace zthread {
 
@@ -35,26 +39,24 @@ namespace zthread {
  * @version 2.2.0
  *
  * This template creates an intrusively reference counted object
- * an IntrusivePtr starts out with a 1 count, which is updated as references are 
- * added and removed. When the reference count drops to 0, the 
- * IntrusivePtr will delete itself. 
+ * an IntrusivePtr starts out with a 1 count, which is updated as references are
+ * added and removed. When the reference count drops to 0, the
+ * IntrusivePtr will delete itself.
  */
 template <typename T, class LockType>
 class IntrusivePtr : NonCopyable {
-  
   //! Intrusive reference count
   size_t _count;
-  
+
   //! Synchornization object
   LockType _lock;
 
-public:
-
+ public:
   /**
    * Create an IntrusivePtr with a count.
    */
-  IntrusivePtr(size_t InitialCount=1) : _count(InitialCount) { }
-  
+  IntrusivePtr(size_t InitialCount = 1) : _count(InitialCount) {}
+
   /**
    * Destroy an IntrusivePtr
    */
@@ -65,10 +67,8 @@ public:
    * call to delReference() for it to be deleted.
    */
   void addReference() {
-
     Guard<LockType, LockedScope> g(_lock);
-    _count++;  
-
+    _count++;
   }
 
   /**
@@ -76,24 +76,16 @@ public:
    * drops to 0 as a result, the object deletes itself.
    */
   void delReference() {
-
     bool result = false;
 
     {
-
       Guard<LockType, LockedScope> g(_lock);
       result = (--_count == 0);
-
     }
 
-    if(result)
-      delete this;
-
+    if (result) delete this;
   }
-
 };
-
-
 };
 
 #endif

@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -34,33 +38,33 @@
 
 #if defined(ZT_POSIX)
 
-#  if defined(HAVE_ATOMIC_LINUX)
+#if defined(HAVE_ATOMIC_LINUX)
 
-#    if defined(ZTHREAD_USE_SPIN_LOCKS)
-#      include "linux/atomic_fast_lock.h"
-#    endif
+#if defined(ZTHREAD_USE_SPIN_LOCKS)
+#include "linux/atomic_fast_lock.h"
+#endif
 
-#  endif
+#endif
 
-#  include "posix/fast_lock.h"
+#include "posix/fast_lock.h"
 
 // Use spin locks
 #elif defined(ZTHREAD_USE_SPIN_LOCKS)
 
-#  if defined(ZT_WIN9X)
-#    include "win9x/atomic_fast_lock.h"
-#  elif defined(ZT_WIN32)
-#    include "win32/atomic_fast_lock.h"
-#  endif
+#if defined(ZT_WIN9X)
+#include "win9x/atomic_fast_lock.h"
+#elif defined(ZT_WIN32)
+#include "win32/atomic_fast_lock.h"
+#endif
 
 // Use normal Mutex objects
 #elif defined(ZT_WIN9X) || defined(ZT_WIN32)
 
-#  include "win32/fast_lock.h"
+#include "win32/fast_lock.h"
 
 #elif defined(ZT_MACOS)
 
-#  include "macos/fast_lock.h"
+#include "macos/fast_lock.h"
 
 #endif
 
@@ -68,4 +72,4 @@
 #error "No FastLock implementation could be selected"
 #endif
 
-#endif // __ZTFASTLOCKSELECT_H__
+#endif  // __ZTFASTLOCKSELECT_H__

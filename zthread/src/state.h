@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -26,7 +30,7 @@
 namespace zthread {
 
 /**
- * @class State 
+ * @class State
  * @author Eric Crahen <http://www.code-foo.com>
  * @date <2003-07-16T20:04:01-0400>
  * @version 2.2.1
@@ -35,7 +39,6 @@ namespace zthread {
  */
 class State {
  public:
-
   //! Various states
   typedef enum { REFERENCE, IDLE, RUNNING, JOINED } STATE;
 
@@ -47,28 +50,22 @@ class State {
   /**
    * Test for the IDLE state. No task has yet run.
    */
-  bool isIdle() const {
-    return _state == IDLE;
-  }
+  bool isIdle() const { return _state == IDLE; }
 
   /**
-   * Test for the JOINED state. A task has completed and 
+   * Test for the JOINED state. A task has completed and
    * the thread is join()ed.
    *
    * @return bool
    */
-  bool isJoined() const {
-    return _state == JOINED;
-  }
+  bool isJoined() const { return _state == JOINED; }
 
   /**
    * Test for the RUNNING state. A task is in progress.
    *
    * @return bool
    */
-  bool isRunning() const {
-    return _state == RUNNING;
-  }
+  bool isRunning() const { return _state == RUNNING; }
 
   /**
    * Test for the REFERENCE state. A task is in progress but not
@@ -76,9 +73,7 @@ class State {
    *
    * @return bool
    */
-  bool isReference() const {
-    return _state == REFERENCE;
-  }
+  bool isReference() const { return _state == REFERENCE; }
 
   /**
    * Transition to the IDLE state.
@@ -86,13 +81,10 @@ class State {
    * @return bool true if successful
    */
   bool setIdle() {
-
-    if(_state != RUNNING)
-      return false;
+    if (_state != RUNNING) return false;
 
     _state = IDLE;
     return true;
-
   }
 
   /**
@@ -101,13 +93,10 @@ class State {
    * @return bool true if successful
    */
   bool setRunning() {
-
-    if(_state != IDLE)
-      return false;
+    if (_state != IDLE) return false;
 
     _state = RUNNING;
     return true;
-
   }
 
   /**
@@ -116,15 +105,11 @@ class State {
    * @return bool true if successful
    */
   bool setReference() {
-
-    if(_state != IDLE)
-      return false;
+    if (_state != IDLE) return false;
 
     _state = REFERENCE;
     return true;
-
   }
-
 
   /**
    * Transition to the JOINED state.
@@ -132,20 +117,14 @@ class State {
    * @return bool true if successful
    */
   bool setJoined() {
-
     _state = JOINED;
     return true;
-
   }
 
  private:
-
   //! Current state
   STATE _state;
-
 };
-
-
 };
 
 #endif

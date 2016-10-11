@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -24,86 +28,55 @@
 #include "mutex_impl.h"
 #include "thread_ops.h"
 
-
 namespace zthread {
 
-  class InheritPriorityBehavior : public NullBehavior {
-  
-    ThreadImpl* owner;
-    Priority p;
+class InheritPriorityBehavior : public NullBehavior {
+  ThreadImpl* owner;
+  Priority p;
 
-  protected:
-
-    // Temporarily raise the effective priority of the owner 
-    inline void waiterArrived(ThreadImpl* impl) {  
-    
-      Priority q = impl->getPriority();
-      if((int)q > (int)p) {
-
-        ThreadOps::setPriority(impl, p);
-        p = q;
-      
-      }
-
+ protected:
+  // Temporarily raise the effective priority of the owner
+  inline void waiterArrived(ThreadImpl* impl) {
+    Priority q = impl->getPriority();
+    if ((int)q > (int)p) {
+      ThreadOps::setPriority(impl, p);
+      p = q;
     }
-
-
-    // Note the owners priority
-    inline void ownerAcquired(ThreadImpl* impl) {  
-
-      p = impl->getPriority();
-      owner = impl;
-
-    }
-
-    // Restore its original priority
-    inline void ownerReleased(ThreadImpl* impl) {  
-
-      if(p > owner->getPriority())
-        ThreadOps::setPriority(impl, impl->getPriority());
-
-    }
-
-  };
-
-  class PriorityInheritanceMutexImpl : 
-    public MutexImpl<priority_list, InheritPriorityBehavior> { };
-
-  PriorityInheritanceMutex::PriorityInheritanceMutex() {
-  
-    _impl = new PriorityInheritanceMutexImpl();
-  
   }
 
-  PriorityInheritanceMutex::~PriorityInheritanceMutex() {
-
-    if(_impl != 0) 
-      delete _impl;
-
+  // Note the owners priority
+  inline void ownerAcquired(ThreadImpl* impl) {
+    p = impl->getPriority();
+    owner = impl;
   }
 
-  // P
-  void PriorityInheritanceMutex::acquire() {
-
-    _impl->acquire(); 
-
+  // Restore its original priority
+  inline void ownerReleased(ThreadImpl* impl) {
+    if (p > owner->getPriority())
+      ThreadOps::setPriority(impl, impl->getPriority());
   }
+};
 
+class PriorityInheritanceMutexImpl
+    : public MutexImpl<priority_list, InheritPriorityBehavior> {};
 
-  // P
-  bool PriorityInheritanceMutex::tryAcquire(unsigned long ms) {
+PriorityInheritanceMutex::PriorityInheritanceMutex() {
+  _impl = new PriorityInheritanceMutexImpl();
+}
 
-    return _impl->tryAcquire(ms); 
+PriorityInheritanceMutex::~PriorityInheritanceMutex() {
+  if (_impl != 0) delete _impl;
+}
 
-  }
+// P
+void PriorityInheritanceMutex::acquire() { _impl->acquire(); }
 
-  // V
-  void PriorityInheritanceMutex::release() {
+// P
+bool PriorityInheritanceMutex::tryAcquire(unsigned long ms) {
+  return _impl->tryAcquire(ms);
+}
 
-    _impl->release(); 
+// V
+void PriorityInheritanceMutex::release() { _impl->release(); }
 
-  }
-
-
-} // namespace ZThread
-
+}  // namespace ZThread

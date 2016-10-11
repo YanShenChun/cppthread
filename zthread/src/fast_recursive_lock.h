@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -26,44 +30,43 @@
 #include "zthread/config.h"
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#include "config.h"
 #endif
-
 
 // Select the correct FastRecusriveLock implementation based on
 // what the compilation environment has defined
 
-#if defined(ZTHREAD_DUAL_LOCKS) 
-#  include "vanilla/dual_mutex_recursive_lock.h"
+#if defined(ZTHREAD_DUAL_LOCKS)
+#include "vanilla/dual_mutex_recursive_lock.h"
 #else
 
-#  ifndef ZT_VANILLA 
+#ifndef ZT_VANILLA
 
-#  if defined(ZT_POSIX)
+#if defined(ZT_POSIX)
 
 // Linux and Solaris have working pthreads recursive locks. These
 // are created differently, and there are some system don't seem to
 // include recursive locks at all. Several recursive implementations
 // are provided
 
-#    if defined(__linux__)
-#      include "linux/fast_recursive_lock.h"
-#    elif defined(HAVE_MUTEXATTR_SETTYPE)
-#      include "solaris/fast_recursive_lock.h"
-#    elif defined(ZTHREAD_CONDITION_LOCKS) 
-#      include "posix/condition_recursive_lock.h"
-#    endif
+#if defined(__linux__)
+#include "linux/fast_recursive_lock.h"
+#elif defined(HAVE_MUTEXATTR_SETTYPE)
+#include "solaris/fast_recursive_lock.h"
+#elif defined(ZTHREAD_CONDITION_LOCKS)
+#include "posix/condition_recursive_lock.h"
+#endif
 
 // Use spin locks
-#  elif defined(ZT_WIN32) && defined(ZTHREAD_USE_SPIN_LOCKS)
-#    include "win32/atomic_fast_recursive_lock.h"
+#elif defined(ZT_WIN32) && defined(ZTHREAD_USE_SPIN_LOCKS)
+#include "win32/atomic_fast_recursive_lock.h"
 
 // Use normal Mutex objects
-#  elif defined(ZT_WIN32) || defined(ZT_WIN9X)
-#    include "win32/fast_recursive_lock.h"
-#  endif
+#elif defined(ZT_WIN32) || defined(ZT_WIN9X)
+#include "win32/fast_recursive_lock.h"
+#endif
 
-#  endif
+#endif
 
 #endif
 
@@ -71,4 +74,4 @@
 #include "vanilla/simple_recursive_lock.h"
 #endif
 
-#endif // __ZTFASTRECURSIVELOCKSELECT_H__
+#endif  // __ZTFASTRECURSIVELOCKSELECT_H__

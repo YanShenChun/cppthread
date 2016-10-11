@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -23,18 +27,18 @@
 #ifndef __ZTGUARD_H__
 #define __ZTGUARD_H__
 
-#include "zthread/non_copyable.h"
 #include "zthread/exceptions.h"
+#include "zthread/non_copyable.h"
 
-namespace zthread { 
+namespace zthread {
 
-// 
-// GuardLockingPolicyContract { 
 //
-// createScope(lock_type&)  
-// bool createScope(lock_type&, unsigned long)  
-// destroyScope(lock_type&)  
-// 
+// GuardLockingPolicyContract {
+//
+// createScope(lock_type&)
+// bool createScope(lock_type&, unsigned long)
+// destroyScope(lock_type&)
+//
 // }
 //
 
@@ -51,39 +55,29 @@ namespace zthread {
  */
 template <class LockType>
 class LockHolder {
-
-  LockType &_lock;
+  LockType& _lock;
   bool _enabled;
 
  public:
-
   template <class T>
-  LockHolder(T& t) : _lock(extract(t)._lock), _enabled(true) { }
-  
-  LockHolder(LockHolder& holder) : _lock(holder._lock), _enabled(true) { }
+  LockHolder(T& t) : _lock(extract(t)._lock), _enabled(true) {}
 
-  LockHolder(LockType& lock) : _lock(lock), _enabled(true) { }
+  LockHolder(LockHolder& holder) : _lock(holder._lock), _enabled(true) {}
 
-  void disable() { 
-    _enabled = false;
-  }
+  LockHolder(LockType& lock) : _lock(lock), _enabled(true) {}
 
-  bool isDisabled() {
-    return !_enabled;
-  }
+  void disable() { _enabled = false; }
 
-  LockType& getLock() {
-    return _lock;
-  }
+  bool isDisabled() { return !_enabled; }
+
+  LockType& getLock() { return _lock; }
 
  protected:
-
-  template <class T>  
+  template <class T>
   static LockHolder& extract(T& t) {
     // Design and Evolution of C++, page 328
     return (LockHolder&)(t);
   }
-
 };
 
 /**
@@ -98,40 +92,29 @@ class LockHolder {
 template <class Scope1, class Scope2>
 class CompoundScope {
  public:
-
   template <class LockType>
   static void createScope(LockHolder<LockType>& l) {
-
     Scope1::createScope(l);
     Scope2::createScope(l);
-
   }
 
   template <class LockType>
   static bool createScope(LockHolder<LockType>& l, unsigned long ms) {
-
-    if(Scope1::createScope(l, ms))
-      if(!Scope2::createScope(l, ms)) {
-
+    if (Scope1::createScope(l, ms))
+      if (!Scope2::createScope(l, ms)) {
         Scope1::destroyScope(l);
         return false;
-
       }
-       
-    return true;
 
+    return true;
   }
 
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-
     Scope1::destroyScope(l);
     Scope2::destroyScope(l);
-
   }
-
 };
-
 
 /**
  * @class LockedScope
@@ -145,7 +128,6 @@ class CompoundScope {
  */
 class LockedScope {
  public:
-
   /**
    * A new protection scope is being created by l2, using an existing scope
    * created by l1.
@@ -154,7 +136,7 @@ class LockedScope {
    * @param lock2 LockType1& is the LockHolder that wants to share
   template <class LockType1, class LockType2>
   static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-    
+
     l2.getLock().acquire();
 
   }
@@ -167,9 +149,7 @@ class LockedScope {
    */
   template <class LockType>
   static bool createScope(LockHolder<LockType>& l, unsigned long ms) {
-
     return l.getLock().tryAcquire(ms);
-
   }
 
   /**
@@ -179,9 +159,7 @@ class LockedScope {
    */
   template <class LockType>
   static void createScope(LockHolder<LockType>& l) {
-
     l.getLock().acquire();
-
   }
 
   /**
@@ -191,13 +169,9 @@ class LockedScope {
    */
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-
     l.getLock().release();
-
   }
-
 };
-
 
 /**
  * @class UnlockedScope
@@ -207,11 +181,10 @@ class LockedScope {
  *
  * Locking policy for Lockable objects. This policy release()s a Lockable
  * when the protection scope is created, and it acquire()s a Lockable
- * when the scope is destroyed. 
+ * when the scope is destroyed.
  */
 class UnlockedScope {
  public:
-
   /**
    * A new protection scope is being created by l2, using an existing scope
    * created by l1.
@@ -221,9 +194,7 @@ class UnlockedScope {
    */
   template <class LockType1, class LockType2>
   static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-
     l2.getLock().release();
-
   }
 
   /**
@@ -245,14 +216,9 @@ class UnlockedScope {
    */
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-
     l.getLock().acquire();
-
   }
-
 };
- 
-
 
 /**
  * @class TimedLockedScope
@@ -266,7 +232,6 @@ class UnlockedScope {
 template <int TimeOut>
 class TimedLockedScope {
  public:
-
   /**
    * Try to enterScope the given LockHolder.
    *
@@ -274,29 +239,19 @@ class TimedLockedScope {
    */
   template <class LockType1, class LockType2>
   static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-
-    if(!l2.getLock().tryAcquire(TimeOut))
-      throw Timeout_Exception();
-       
+    if (!l2.getLock().tryAcquire(TimeOut)) throw Timeout_Exception();
   }
 
   template <class LockType>
   static void createScope(LockHolder<LockType>& l) {
-
-    if(!l.getLock().tryAcquire(TimeOut))
-      throw Timeout_Exception();
-
+    if (!l.getLock().tryAcquire(TimeOut)) throw Timeout_Exception();
   }
 
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-
     l.getLock().release();
-
   }
-
 };
-
 
 /**
  * @class OverlappedScope
@@ -309,27 +264,20 @@ class TimedLockedScope {
  */
 class OverlappedScope {
  public:
-
   template <class LockType1, class LockType2>
-  static void transferScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-
+  static void transferScope(LockHolder<LockType1>& l1,
+                            LockHolder<LockType2>& l2) {
     l1.getLock().acquire();
 
     l2.getLock().release();
     l2.disable();
-
   }
 
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-
     l.getLock().release();
-
   }
-
 };
-
-
 
 /**
  * @class Guard
@@ -338,29 +286,29 @@ class OverlappedScope {
  * @version 2.2.0
  *
  * Scoped locking utility. This template class can be given a Lockable
- * synchronization object and can 'Guard' or serialize access to 
+ * synchronization object and can 'Guard' or serialize access to
  * that method.
- *  
- * For instance, consider a case in which a class or program have a  
- * Mutex object associated with it. Access can be serialized with a 
+ *
+ * For instance, consider a case in which a class or program have a
+ * Mutex object associated with it. Access can be serialized with a
  * Guard as shown below.
  *
  * @code
  *
  * Mutex _mtx;
  * void guarded() {
- * 
+ *
  *    Guard<Mutex> g(_mtx);
  *
  * }
  *
  * @endcode
  *
- * The Guard will lock the synchronization object when it is created and 
- * automatically unlock it when it goes out of scope. This eliminates 
+ * The Guard will lock the synchronization object when it is created and
+ * automatically unlock it when it goes out of scope. This eliminates
  * common mistakes like forgetting to unlock your mutex.
  *
- * An alternative to the above example would be 
+ * An alternative to the above example would be
  *
  * @code
  *
@@ -381,102 +329,84 @@ class OverlappedScope {
  */
 template <class LockType, class LockingPolicy = LockedScope>
 class Guard : private LockHolder<LockType>, private NonCopyable {
-
   friend class LockHolder<LockType>;
 
-public:
-  
+ public:
   /**
    * Create a Guard that enforces a the effective protection scope
-   * throughout the lifetime of the Guard object or until the protection 
+   * throughout the lifetime of the Guard object or until the protection
    * scope is modified by another Guard.
    *
-   * @param lock LockType the lock this Guard will use to enforce its 
+   * @param lock LockType the lock this Guard will use to enforce its
    * protection scope.
-   * @post the protection scope may be ended prematurely 
+   * @post the protection scope may be ended prematurely
    */
   Guard(LockType& lock) : LockHolder<LockType>(lock) {
-
     LockingPolicy::createScope(*this);
-
   };
 
   /**
    * Create a Guard that enforces a the effective protection scope
-   * throughout the lifetime of the Guard object or until the protection 
+   * throughout the lifetime of the Guard object or until the protection
    * scope is modified by another Guard.
    *
-   * @param lock LockType the lock this Guard will use to enforce its 
+   * @param lock LockType the lock this Guard will use to enforce its
    * protection scope.
-   * @post the protection scope may be ended prematurely 
+   * @post the protection scope may be ended prematurely
    */
   Guard(LockType& lock, unsigned long timeout) : LockHolder<LockType>(lock) {
-
-    if(!LockingPolicy::createScope(*this, timeout))
-      throw Timeout_Exception();
-
+    if (!LockingPolicy::createScope(*this, timeout)) throw Timeout_Exception();
   };
 
   /**
    * Create a Guard that shares the effective protection scope
-   * from the given Guard to this Guard. 
+   * from the given Guard to this Guard.
    *
-   * @param g Guard<U, V> guard that is currently enabled 
-   * @param lock LockType the lock this Guard will use to enforce its 
+   * @param g Guard<U, V> guard that is currently enabled
+   * @param lock LockType the lock this Guard will use to enforce its
    * protection scope.
    */
   template <class U, class V>
   Guard(Guard<U, V>& g) : LockHolder<LockType>(g) {
-
     LockingPolicy::shareScope(*this, this->extract(g));
-    
   }
 
   /**
    * Create a Guard that shares the effective protection scope
-   * from the given Guard to this Guard. 
+   * from the given Guard to this Guard.
    *
-   * @param g Guard guard that is currently enabled 
-   * @param lock LockType the lock this Guard will use to enforce its 
+   * @param g Guard guard that is currently enabled
+   * @param lock LockType the lock this Guard will use to enforce its
    * protection scope.
    */
   Guard(Guard& g) : LockHolder<LockType>(g) {
-
     LockingPolicy::shareScope(*this, g);
-    
   }
-
 
   /**
    * Create a Guard that transfers the effective protection scope
    * from the given Guard to this Guard.
    *
-   * @param g Guard<U, V> guard that is currently enabled 
-   * @param lock LockType the lock this Guard will use to enforce its 
+   * @param g Guard<U, V> guard that is currently enabled
+   * @param lock LockType the lock this Guard will use to enforce its
    * protection scope.
    */
   template <class U, class V>
   Guard(Guard<U, V>& g, LockType& lock) : LockHolder<LockType>(lock) {
-
     LockingPolicy::transferScope(*this, this->extract(g));
-
   }
-
 
   /**
    * Create a Guard that transfers the effective protection scope
    * from the given Guard to this Guard.
    *
-   * @param g Guard guard that is currently enabled 
-   * @param lock LockType the lock this Guard will use to enforce its 
+   * @param g Guard guard that is currently enabled
+   * @param lock LockType the lock this Guard will use to enforce its
    * protection scope.
    */
   Guard(Guard& g, LockType& lock) : LockHolder<LockType>(lock) {
-
     LockingPolicy::transferScope(*this, g);
-
   }
-  
 
   /**
    * Unlock a given Lockable object with the destruction of this Guard
@@ -485,27 +415,14 @@ public:
 
 }; /* Guard */
 
-
 template <class LockType, class LockingPolicy>
 Guard<LockType, LockingPolicy>::~Guard() throw() {
-    
   try {
-    
-    if(!this->isDisabled())
-      LockingPolicy::destroyScope(*this);
-    
-  } catch (...) { /* ignore */ }  
-  
+    if (!this->isDisabled()) LockingPolicy::destroyScope(*this);
+
+  } catch (...) { /* ignore */
+  }
 }
-
-
 };
 
-#endif // __ZTGUARD_H__
-
-
-
-
-
-
-
+#endif  // __ZTGUARD_H__

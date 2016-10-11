@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -23,9 +27,9 @@
 #ifndef __ZTFASTRECURSIVELOCK_H__
 #define __ZTFASTRECURSIVELOCK_H__
 
+#include <assert.h>
 #include "../fast_lock.h"
 #include "../thread_ops.h"
-#include <assert.h>
 
 namespace zthread {
 
@@ -37,94 +41,77 @@ namespace zthread {
  * @version 2.2.8
  *
  * This implementation of a FastRecursiveLock uses the which ever FastLock
- * that is selected to create a recursive spin lock. 
- */ 
+ * that is selected to create a recursive spin lock.
+ */
 class FastRecursiveLock : private NonCopyable {
-  
   FastLock _lock;
 
   ThreadOps _owner;
 
   volatile unsigned int _count;
-  
-public:
-  
-  inline FastRecursiveLock() : _owner(ThreadOps::INVALID), _count(0) {}
-  
-  inline ~FastRecursiveLock() {
 
+ public:
+  inline FastRecursiveLock() : _owner(ThreadOps::INVALID), _count(0) {}
+
+  inline ~FastRecursiveLock() {
     assert(_owner == ThreadOps::INVALID);
     assert(_count == 0);
-
   }
-  
-  inline void acquire() {
 
+  inline void acquire() {
     ThreadOps self(ThreadOps::self());
     bool wasLocked = false;
 
     do {
-      
       _lock.acquire();
-      
+
       // If there is no owner, or the owner is the caller
       // update the count
-      if(_owner == ThreadOps::INVALID || _owner == self) {
-
+      if (_owner == ThreadOps::INVALID || _owner == self) {
         _owner = self;
         _count++;
-        
+
         wasLocked = true;
-  
       }
 
       _lock.release();
-      
-    } while(!wasLocked);
+
+    } while (!wasLocked);
 
     assert(_owner == ThreadOps::self());
-
   }
 
   inline void release() {
-
     assert(_owner == ThreadOps::self());
 
     _lock.acquire();
 
-    if(--_count == 0)
-      _owner = ThreadOps::INVALID;
+    if (--_count == 0) _owner = ThreadOps::INVALID;
 
     _lock.release();
-    
   }
-  
-  inline bool tryAcquire(unsigned long timeout=0) {
 
+  inline bool tryAcquire(unsigned long timeout = 0) {
     ThreadOps self(ThreadOps::self());
     bool wasLocked = false;
 
     _lock.acquire();
-    
-    if(_owner == ThreadOps::INVALID || _owner == self) {
-    
+
+    if (_owner == ThreadOps::INVALID || _owner == self) {
       _owner = self;
       _count++;
-      
-      wasLocked = true;
 
+      wasLocked = true;
     }
-    
+
     _lock.release();
 
     assert(!wasLocked || _owner == ThreadOps::self());
-    return wasLocked;    
-    
+    return wasLocked;
   }
-  
+
 }; /* FastRecursiveLock */
 
-
-} // namespace ZThread
+}  // namespace ZThread
 
 #endif

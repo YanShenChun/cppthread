@@ -5,17 +5,21 @@
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished
  * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in
+ * all
  * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ * IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
@@ -23,8 +27,8 @@
 #ifndef __ZTPRIORITYOPS_H__
 #define __ZTPRIORITYOPS_H__
 
-#include "zthread/priority.h"
 #include "../thread_ops.h"
+#include "zthread/priority.h"
 
 namespace zthread {
 
@@ -34,18 +38,13 @@ namespace zthread {
  * @date <2003-07-16T23:30:00-0400>
  * @version 2.2.0
  *
- * This class is an abstraction used to perform various operations on a 
+ * This class is an abstraction used to perform various operations on a
  * native POSIX thread.
  */
 class PriorityOps {
-  
-
-public:
-
-  
+ public:
 };
 
+}  // namespace ZThread
 
-} // namespace ZThread
-
-#endif // __ZTPRIORITYOPS_H__
+#endif  // __ZTPRIORITYOPS_H__
