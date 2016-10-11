@@ -39,14 +39,28 @@ AtomicCount::~AtomicCount() {
   delete reinterpret_cast<LPLONG>(_value);
 }
 
-void AtomicCount::increment() {
-  ::InterlockedIncrement(reinterpret_cast<LPLONG>(_value));
+//! Postfix decrement and return the current value
+size_t AtomicCount::operator--(int) {
+	LONG v = ::InterlockedDecrement(reinterpret_cast<LPLONG>(_value));
+	return ++v;
 }
 
-bool AtomicCount::decrement() {
-  LONG v = ::InterlockedDecrement(reinterpret_cast<LPLONG>(_value));
-  return static_cast<unsigned long>(v) == 0;
+//! Postfix increment and return the current value
+size_t AtomicCount::operator++(int) {
+	LONG v = ::InterlockedIncrement(reinterpret_cast<LPLONG>(_value));
+	return --v;
 }
+
+//! Prefix decrement and return the current value
+size_t AtomicCount::operator--() {
+	return ::InterlockedDecrement(reinterpret_cast<LPLONG>(_value));
+}
+
+//! Prefix increment and return the current value
+size_t AtomicCount::operator++() {
+	return ::InterlockedIncrement(reinterpret_cast<LPLONG>(_value));
+}
+
 };
 
 #endif  // __ZTATOMICCOUNTIMPL_H__

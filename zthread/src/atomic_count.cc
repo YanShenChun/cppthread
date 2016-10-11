@@ -34,28 +34,24 @@
 #include "config.h"
 #endif
 
-/*
+
 // Select the correct AtomicCount implementation based on
 // what the compilation environment has defined
 
 #ifndef ZT_VANILLA
 
 #if defined(HAVE_ATOMIC_LINUX)
-#  include "linux/AtomicCount.cxx"
+#  include "linux/atomic_count.cc"
 #elif defined(ZT_WIN32)
-#  include "win32/AtomicCount.cxx"
+#  include "win32/atomic_count.cc"
 #elif defined(ZT_WIN9X)
-#  include "win9x/AtomicCount.cxx"
+#  include "win9x/atomic_count.cc"
 #endif
 
-#endif
+#else
 
 // Default to an AtomicCount that just uses a FastLock
-#ifndef __ZTATOMICCOUNTIMPL_H__
-#  include "vanilla/SimpleAtomicCount.cxx"
-#endif
-*/
-
 #include "vanilla/simple_atomic_count.cc"
 
+#endif
 #endif  // __ZTATOMICCOUNTSELECT_H__
