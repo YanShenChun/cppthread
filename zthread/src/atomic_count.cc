@@ -47,10 +47,10 @@
 #elif defined(ZT_WIN9X)
 #  include "win9x/atomic_count.cc"
 #endif
+
+#else
 // Default to an AtomicCount that just uses a FastLock
 #  include "vanilla/simple_atomic_count.cc"
-#else
-
 
 #endif
 #endif  // __ZTATOMICCOUNTSELECT_H__
