@@ -46,10 +46,10 @@ namespace zthread {
  * counts.
  */
 class ZTHREAD_API AtomicCount : public NonCopyable {
-  void* _value;
+  void* value_;
 
  public:
-  //! Create a new AtomicCount, initialized to a value of 1
+  //! Create a new AtomicCount, initialized to a value of 0
   AtomicCount();
 
   //! Destroy a new AtomicCount
@@ -69,6 +69,6 @@ class ZTHREAD_API AtomicCount : public NonCopyable {
 
 }; /* AtomicCount */
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTATOMICCOUNT_H__

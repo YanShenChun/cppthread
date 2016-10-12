@@ -32,35 +32,35 @@
 
 namespace zthread {
 
-AtomicCount::AtomicCount() { _value = reinterpret_cast<void*>(new LONG(0)); }
+AtomicCount::AtomicCount() { value_ = reinterpret_cast<void*>(new LONG(0)); }
 
 AtomicCount::~AtomicCount() {
-  assert(*reinterpret_cast<LPLONG>(_value) == 0);
-  delete reinterpret_cast<LPLONG>(_value);
+  assert(*reinterpret_cast<LPLONG>(value_) == 0);
+  delete reinterpret_cast<LPLONG>(value_);
 }
 
 //! Postfix decrement and return the previous value
 size_t AtomicCount::operator--(int) {
-	LONG v = ::InterlockedDecrement(reinterpret_cast<LPLONG>(_value));
+	LONG v = ::InterlockedDecrement(reinterpret_cast<LPLONG>(value_));
 	return ++v;
 }
 
 //! Postfix increment and return the previous value
 size_t AtomicCount::operator++(int) {
-	LONG v = ::InterlockedIncrement(reinterpret_cast<LPLONG>(_value));
+	LONG v = ::InterlockedIncrement(reinterpret_cast<LPLONG>(value_));
 	return --v;
 }
 
 //! Prefix decrement and return the current value
 size_t AtomicCount::operator--() {
-	return ::InterlockedDecrement(reinterpret_cast<LPLONG>(_value));
+	return ::InterlockedDecrement(reinterpret_cast<LPLONG>(value_));
 }
 
 //! Prefix increment and return the current value
 size_t AtomicCount::operator++() {
-	return ::InterlockedIncrement(reinterpret_cast<LPLONG>(_value));
+	return ::InterlockedIncrement(reinterpret_cast<LPLONG>(value_));
 }
 
-};
+}; // namespace zthread
 
 #endif  // __ZTATOMICCOUNTIMPL_H__

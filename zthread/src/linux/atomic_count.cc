@@ -27,38 +27,37 @@
 #ifndef __ZTATOMICCOUNTIMPL_H__
 #define __ZTATOMICCOUNTIMPL_H__
 
-//#include <pthread.h>
 #include <assert.h>
 
 namespace zthread {
 
-AtomicCount::AtomicCount() { _value = reinterpret_cast<void*>(new long(0)); }
+AtomicCount::AtomicCount() { value_ = reinterpret_cast<void*>(new long(0)); }
 
 AtomicCount::~AtomicCount() {
-  assert(*reinterpret_cast<long*>(_value) == 0);
-  delete reinterpret_cast<long*>(_value);
+  assert(*reinterpret_cast<long*>(value_) == 0);
+  delete reinterpret_cast<long*>(value_);
 }
 
 //! Postfix decrement and return the previous value
 size_t AtomicCount::operator--(int) {
-	return __sync_fetch_and_sub(reinterpret_cast<long*>(_value), 1);
+	return __sync_fetch_and_sub(reinterpret_cast<long*>(value_), 1);
 }
 
 //! Postfix increment and return the previous value
 size_t AtomicCount::operator++(int) {
-	return __sync_fetch_and_add(reinterpret_cast<long*>(_value), 1);
+	return __sync_fetch_and_add(reinterpret_cast<long*>(value_), 1);
 }
 
 //! Prefix decrement and return the current value
 size_t AtomicCount::operator--() {
-	return __sync_sub_and_fetch(reinterpret_cast<long*>(_value), 1);
+	return __sync_sub_and_fetch(reinterpret_cast<long*>(value_), 1);
 }
 
 //! Prefix increment and return the current value
 size_t AtomicCount::operator++() {
-	return __sync_add_and_fetch(reinterpret_cast<long*>(_value), 1);
+	return __sync_add_and_fetch(reinterpret_cast<long*>(value_), 1);
 }
 
-};
+}; // namespace zthread 
 
 #endif  // __ZTATOMICCOUNTIMPL_H__
