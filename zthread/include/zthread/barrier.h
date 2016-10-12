@@ -30,6 +30,8 @@
 #include "zthread/condition.h"
 #include "zthread/guard.h"
 #include "zthread/runnable.h"
+#include "zthread/task.h"
+#include "zthread/thread.h"
 #include "zthread/waitable.h"
 
 namespace zthread {
@@ -48,8 +50,7 @@ namespace zthread {
  * thread arrives. The <i>N</i>th thread will awaken all the the others.
  *
  * An optional Runnable command may be associated with the Barrier. This will be
- * run()
- * when the <i>N</i>th thread arrives and Barrier is not broken.
+ * run() when the <i>N</i>th thread arrives and Barrier is not broken.
  *
  * <b>Error Checking</b>
  *
@@ -126,7 +127,7 @@ class Barrier : public Waitable, private NonCopyable {
    * @post If no exception was thrown, all threads have successfully arrived
    * @post If an exception was thrown, the barrier is broken
    */
-  virtual void wait() {
+  virtual void Wait() {
     Guard<LockType> g(_lock);
 
     if (_broken) throw BrokenBarrier_Exception();
@@ -165,7 +166,7 @@ class Barrier : public Waitable, private NonCopyable {
 
       try {
         // Wait for the other threads to arrive
-        _arrived.wait();
+        _arrived.Wait();
 
       } catch (Interrupted_Exception&) {
         // Its possible for a thread to be interrupted before the
@@ -218,7 +219,7 @@ class Barrier : public Waitable, private NonCopyable {
    * @post If no exception was thrown, all threads have successfully arrived
    * @post If an exception was thrown, the barrier is broken
    */
-  virtual bool wait(unsigned long timeout) {
+  virtual bool Wait(unsigned long timeout) {
     Guard<LockType> g(_lock);
 
     if (_broken) throw BrokenBarrier_Exception();
@@ -257,7 +258,7 @@ class Barrier : public Waitable, private NonCopyable {
 
       try {
         // Wait for the other threads to arrive
-        if (!_arrived.wait(timeout)) _broken = true;
+        if (!_arrived.Wait(timeout)) _broken = true;
 
       } catch (Interrupted_Exception&) {
         // Its possible for a thread to be interrupted before the

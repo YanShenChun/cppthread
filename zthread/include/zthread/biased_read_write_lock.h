@@ -140,7 +140,7 @@ class BiasedReadWriteLock : public ReadWriteLock {
     while (!allowReader()) {
       try {
         // wait
-        _condRead.wait();
+        _condRead.Wait();
 
       } catch (...) {
         --_waitingReaders;
@@ -160,7 +160,7 @@ class BiasedReadWriteLock : public ReadWriteLock {
 
     while (!allowReader()) {
       try {
-        result = _condRead.wait(timeout);
+        result = _condRead.Wait(timeout);
 
       } catch (...) {
         --_waitingReaders;
@@ -201,7 +201,7 @@ class BiasedReadWriteLock : public ReadWriteLock {
 
     while (!allowWriter()) {
       try {
-        _condWrite.wait();
+        _condWrite.Wait();
 
       } catch (...) {
         --_waitingWriters;
@@ -221,7 +221,7 @@ class BiasedReadWriteLock : public ReadWriteLock {
 
     while (!allowWriter()) {
       try {
-        result = _condWrite.wait(timeout);
+        result = _condWrite.Wait(timeout);
 
       } catch (...) {
         --_waitingWriters;

@@ -29,3 +29,6 @@
 *.app
 
 zthread/build
+
+# vi[m] swap files
+*.swp

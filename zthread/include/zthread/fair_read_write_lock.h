@@ -98,7 +98,7 @@ class FairReadWriteLock : public ReadWriteLock {
       _rwlock._lock.acquire();
 
       try {
-        while (_rwlock._readers > 0) _rwlock._cond.wait();
+        while (_rwlock._readers > 0) _rwlock._cond.Wait();
 
       } catch (...) {
         _rwlock._lock.release();
@@ -110,7 +110,7 @@ class FairReadWriteLock : public ReadWriteLock {
       if (!_rwlock._lock.tryAcquire(timeout)) return false;
 
       try {
-        while (_rwlock._readers > 0) _rwlock._cond.wait(timeout);
+        while (_rwlock._readers > 0) _rwlock._cond.Wait(timeout);
 
       } catch (...) {
         _rwlock._lock.release();

@@ -119,7 +119,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
   virtual T next() {
     Guard<LockType> g(_lock);
 
-    while (_queue.size() == 0 && !_canceled) _notEmpty.wait();
+    while (_queue.size() == 0 && !_canceled) _notEmpty.Wait();
 
     if (_queue.size() == 0) throw Cancellation_Exception();
 
@@ -154,7 +154,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock, timeout);
 
     while (_queue.size() == 0 && !_canceled) {
-      if (!_notEmpty.wait(timeout)) throw Timeout_Exception();
+      if (!_notEmpty.Wait(timeout)) throw Timeout_Exception();
     }
 
     if (_queue.size() == 0) throw Cancellation_Exception();
