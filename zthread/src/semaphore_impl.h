@@ -142,14 +142,14 @@ void SemaphoreImpl<List>::acquire() {
     ++_entryCount;
     _waiters.insert(self);
 
-    m.acquire();
+    m.Acquire();
 
     {
       Guard<FastLock, UnlockedScope> g2(g1);
       state = m.wait();
     }
 
-    m.release();
+    m.Release();
 
     // Remove from waiter list, regarless of weather release() is called or
     // not. The monitor is sticky, so its possible a state 'stuck' from a
@@ -205,14 +205,14 @@ bool SemaphoreImpl<List>::tryAcquire(unsigned long timeout) {
 
     // Don't bother waiting if the timeout is 0
     if (timeout) {
-      m.acquire();
+      m.Acquire();
 
       {
         Guard<FastLock, UnlockedScope> g2(g1);
         state = m.wait(timeout);
       }
 
-      m.release();
+      m.Release();
     }
 
     // Remove from waiter list, regarless of weather release() is called or
@@ -272,7 +272,7 @@ void SemaphoreImpl<List>::release() {
       ThreadImpl* impl = *i;
       Monitor& m = impl->getMonitor();
 
-      if (m.tryAcquire()) {
+      if (m.TryAcquire()) {
         // Notify the monitor & remove from the waiter list so time isn't
         // wasted checking it again.
         i = _waiters.erase(i);
@@ -281,7 +281,7 @@ void SemaphoreImpl<List>::release() {
         // been ended (killed/interrupted/notify'd)
         bool woke = m.notify();
 
-        m.release();
+        m.Release();
 
         // Once notify() succeeds, return
         if (woke) return;

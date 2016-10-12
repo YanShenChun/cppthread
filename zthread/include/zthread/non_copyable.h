@@ -57,6 +57,6 @@ class NonCopyable {
 
 }; /* NonCopyable */
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTNONCOPYABLE_H__

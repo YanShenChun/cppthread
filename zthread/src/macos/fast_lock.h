@@ -76,7 +76,7 @@ class FastLock : private NonCopyable {
    *
    * @exception Synchronization_Exception - not thrown
    */
-  inline void acquire() {
+  inline void Acquire() {
     if (MPEnterCriticalRegion(_mtx, kDurationForever) != noErr)
       throw Synchronization_Exception();
   }
@@ -89,7 +89,7 @@ class FastLock : private NonCopyable {
    * @return bool
    * @exception Synchronization_Exception - not thrown
    */
-  inline bool tryAcquire(unsigned long timeout = 0) {
+  inline bool TryAcquire(unsigned long timeout = 0) {
     OSStatus status =
         MPEnterCriticalRegion(_mtx, kDurationMillisecond * timeout);
 
@@ -112,7 +112,7 @@ class FastLock : private NonCopyable {
    *
    * @exception Synchronization_Exception - not thrown
    */
-  inline void release() {
+  inline void Release() {
     if (MPExitCriticalRegion(_mtx) != noErr) throw Synchronization_Exception();
   }
 

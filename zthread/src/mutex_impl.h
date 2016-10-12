@@ -150,7 +150,7 @@ void MutexImpl<List, Behavior>::acquire() {
   // ownership of the lock
   else {
     _waiters.insert(self);
-    m.acquire();
+    m.Acquire();
 
     this->waiterArrived(self);
 
@@ -161,7 +161,7 @@ void MutexImpl<List, Behavior>::acquire() {
 
     this->waiterDeparted(self);
 
-    m.release();
+    m.Release();
 
     // Remove from waiter list, regardless of wether release() is called or
     // not. The monitor is sticky, so its possible a state 'stuck' from a
@@ -230,7 +230,7 @@ bool MutexImpl<List, Behavior>::tryAcquire(unsigned long timeout) {
 
     // Don't bother waiting if the timeout is 0
     if (timeout) {
-      m.acquire();
+      m.Acquire();
 
       this->waiterArrived(self);
 
@@ -241,7 +241,7 @@ bool MutexImpl<List, Behavior>::tryAcquire(unsigned long timeout) {
 
       this->waiterDeparted(self);
 
-      m.release();
+      m.Release();
     }
 
     // Remove from waiter list, regarless of weather release() is called or
@@ -307,12 +307,12 @@ void MutexImpl<List, Behavior>::release() {
       impl = *i;
       Monitor& m = impl->getMonitor();
 
-      if (m.tryAcquire()) {
+      if (m.TryAcquire()) {
         // If notify() is not sucessful, it is because the wait() has already
         // been ended (killed/interrupted/notify'd)
         bool woke = m.notify();
 
-        m.release();
+        m.Release();
 
         // Once notify() succeeds, return
         if (woke) return;

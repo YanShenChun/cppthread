@@ -42,11 +42,13 @@
 
 #if defined(ZTHREAD_USE_SPIN_LOCKS)
 #include "linux/atomic_fast_lock.h"
-#endif
-
-#endif
-
+#else
 #include "posix/fast_lock.h"
+#endif
+
+#else
+#include "posix/fast_lock.h"
+#endif
 
 // Use spin locks
 #elif defined(ZTHREAD_USE_SPIN_LOCKS)

@@ -74,7 +74,7 @@ class FastLock : private NonCopyable {
    *
    * @exception Synchronization_Exception - not thrown
    */
-  inline void acquire() {
+  inline void Acquire() {
     if (pthread_mutex_lock(&_mtx) != 0) throw Synchronization_Exception();
   }
 
@@ -86,7 +86,7 @@ class FastLock : private NonCopyable {
    * @return bool
    * @exception Synchronization_Exception - not thrown
    */
-  inline bool tryAcquire(unsigned long timeout = 0) {
+  inline bool TryAcquire(unsigned long timeout = 0) {
     return (pthread_mutex_trylock(&_mtx) == 0);
   }
 
@@ -97,7 +97,7 @@ class FastLock : private NonCopyable {
    *
    * @exception Synchronization_Exception - not thrown
    */
-  inline void release() {
+  inline void Release() {
     if (pthread_mutex_unlock(&_mtx) != 0) throw Synchronization_Exception();
   }
 

@@ -149,7 +149,7 @@ class LockedScope {
    */
   template <class LockType>
   static bool createScope(LockHolder<LockType>& l, unsigned long ms) {
-    return l.getLock().tryAcquire(ms);
+    return l.getLock().TryAcquire(ms);
   }
 
   /**
@@ -159,7 +159,7 @@ class LockedScope {
    */
   template <class LockType>
   static void createScope(LockHolder<LockType>& l) {
-    l.getLock().acquire();
+    l.getLock().Acquire();
   }
 
   /**
@@ -169,7 +169,7 @@ class LockedScope {
    */
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().release();
+    l.getLock().Release();
   }
 };
 
@@ -194,7 +194,7 @@ class UnlockedScope {
    */
   template <class LockType1, class LockType2>
   static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-    l2.getLock().release();
+    l2.getLock().Release();
   }
 
   /**
@@ -216,7 +216,7 @@ class UnlockedScope {
    */
   template <class LockType>
   static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().acquire();
+    l.getLock().Acquire();
   }
 };
 

@@ -99,14 +99,14 @@ class WaiterQueue {
     _list.back().waiters.push_back(self);
     size_t n = _list.back().id;
 
-    m.acquire();
+    m.Acquire();
 
     {
       Guard<Lockable, UnlockedScope> g2(g1);
       state = timeout == 0 ? m.wait() : m.wait(timeout);
     }
 
-    m.release();
+    m.Release();
 
     // If awoke due to a reason other than the last task in the group 'n'
     // completing,
@@ -253,7 +253,7 @@ class WaiterQueue {
       Monitor& m = impl->getMonitor();
 
       // Try the monitor lock, if it cant be locked skip to the next waiter
-      if (m.tryAcquire()) {
+      if (m.TryAcquire()) {
         // Notify the monitor & remove from the waiter list so time isn't
         // wasted checking it again.
         i = grp.waiters.erase(i);
@@ -262,7 +262,7 @@ class WaiterQueue {
         // or not (only fails when the monitor is already going to stop
         // waiting).
         m.notify();
-        m.release();
+        m.Release();
 
       } else
         ++i;

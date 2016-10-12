@@ -63,21 +63,21 @@ class FairReadWriteLock : public ReadWriteLock {
 
     virtual ~ReadLock() {}
 
-    virtual void acquire() {
+    virtual void Acquire() {
       Guard<Mutex> g(_rwlock._lock);
       ++_rwlock._readers;
     }
 
-    virtual bool tryAcquire(unsigned long timeout) {
-      if (!_rwlock._lock.tryAcquire(timeout)) return false;
+    virtual bool TryAcquire(unsigned long timeout) {
+      if (!_rwlock._lock.TryAcquire(timeout)) return false;
 
       ++_rwlock._readers;
-      _rwlock._lock.release();
+      _rwlock._lock.Release();
 
       return true;
     }
 
-    virtual void release() {
+    virtual void Release() {
       Guard<Mutex> g(_rwlock._lock);
       --_rwlock._readers;
 
@@ -94,33 +94,33 @@ class FairReadWriteLock : public ReadWriteLock {
 
     virtual ~WriteLock() {}
 
-    virtual void acquire() {
-      _rwlock._lock.acquire();
+    virtual void Acquire() {
+      _rwlock._lock.Acquire();
 
       try {
         while (_rwlock._readers > 0) _rwlock._cond.Wait();
 
       } catch (...) {
-        _rwlock._lock.release();
+        _rwlock._lock.Release();
         throw;
       }
     }
 
-    virtual bool tryAcquire(unsigned long timeout) {
-      if (!_rwlock._lock.tryAcquire(timeout)) return false;
+    virtual bool TryAcquire(unsigned long timeout) {
+      if (!_rwlock._lock.TryAcquire(timeout)) return false;
 
       try {
         while (_rwlock._readers > 0) _rwlock._cond.Wait(timeout);
 
       } catch (...) {
-        _rwlock._lock.release();
+        _rwlock._lock.Release();
         throw;
       }
 
       return true;
     }
 
-    virtual void release() { _rwlock._lock.release(); }
+    virtual void Release() { _rwlock._lock.Release(); }
   };
 
   friend class ReadLock;

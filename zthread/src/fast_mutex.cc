@@ -33,12 +33,12 @@ FastMutex::FastMutex() : _lock(new FastLock) {}
 
 FastMutex::~FastMutex() { delete _lock; }
 
-void FastMutex::acquire() { _lock->acquire(); }
+void FastMutex::Acquire() { _lock->Acquire(); }
 
-bool FastMutex::tryAcquire(unsigned long timeout) {
-  return _lock->tryAcquire(timeout);
+bool FastMutex::TryAcquire(unsigned long timeout) {
+  return _lock->TryAcquire(timeout);
 }
 
-void FastMutex::release() { _lock->release(); }
+void FastMutex::Release() { _lock->Release(); }
 
 }  // namespace ZThread

@@ -69,13 +69,13 @@ class BiasedReadWriteLock : public ReadWriteLock {
 
     virtual ~ReadLock() {}
 
-    virtual void acquire() { _rwlock.beforeRead(); }
+    virtual void Acquire() { _rwlock.beforeRead(); }
 
-    virtual bool tryAcquire(unsigned long timeout) {
+    virtual bool TryAcquire(unsigned long timeout) {
       return _rwlock.beforeReadAttempt(timeout);
     }
 
-    virtual void release() { _rwlock.afterRead(); }
+    virtual void Release() { _rwlock.afterRead(); }
   };
 
   //! @class WriteLock
@@ -87,13 +87,13 @@ class BiasedReadWriteLock : public ReadWriteLock {
 
     virtual ~WriteLock() {}
 
-    virtual void acquire() { _rwlock.beforeWrite(); }
+    virtual void Acquire() { _rwlock.beforeWrite(); }
 
-    virtual bool tryAcquire(unsigned long timeout) {
+    virtual bool TryAcquire(unsigned long timeout) {
       return _rwlock.beforeWriteAttempt(timeout);
     }
 
-    virtual void release() { _rwlock.afterWrite(); }
+    virtual void Release() { _rwlock.afterWrite(); }
   };
 
   friend class ReadLock;

@@ -27,7 +27,6 @@
 #ifndef __ZTFASTLOCK_H__
 #define __ZTFASTLOCK_H__
 
-#include <asm/atomic.h>
 #include <assert.h>
 #include "../thread_ops.h"
 #include "zthread/non_copyable.h"
@@ -50,7 +49,7 @@ namespace zthread {
  * a spinlock with a decrement and test primative.
  */
 class FastLock : private NonCopyable {
-  atomic_t _value;
+  int _value;
 
 #if !defined(NDEBUG)
   pthread_t _owner;
@@ -58,18 +57,17 @@ class FastLock : private NonCopyable {
 
  public:
   inline FastLock() {
-    atomic_t tmp = ATOMIC_INIT(1);
-    _value = tmp;
+    _value = 1;
   }
 
   inline ~FastLock() {
-    assert(atomic_read(&_value) == 1);
+    assert(_value == 1);
     assert(_owner == 0);
   }
 
-  inline void acquire() {
-    while (!atomic_dec_and_test(&_value)) {
-      atomic_inc(&_value);
+  inline void Acquire() {
+    while (__sync_sub_and_fetch(reinterpret_cast<int*>(&_value), 1) != 0) {
+      __sync_add_and_fetch(reinterpret_cast<int*>(&_value), 1);
       ThreadOps::yield();
     }
 
@@ -78,18 +76,18 @@ class FastLock : private NonCopyable {
 #endif
   }
 
-  inline void release() {
+  inline void Release() {
 #if !defined(NDEBUG)
     assert(pthread_equal(_owner, pthread_self()) != 0);
 #endif
 
-    atomic_inc(&_value);
+    __sync_add_and_fetch(reinterpret_cast<int*>(&_value), 1);
     _owner = 0;
   }
 
-  inline bool tryAcquire(unsigned long timeout = 0) {
-    bool wasLocked = atomic_dec_and_test(&_value);
-    if (!wasLocked) atomic_inc(&_value);
+  inline bool TryAcquire(unsigned long timeout = 0) {
+    bool wasLocked = __sync_sub_and_fetch(reinterpret_cast<int*>(&_value), 1) == 0;
+    if (!wasLocked) __sync_add_and_fetch(reinterpret_cast<int*>(&_value), 1);
 
 #if !defined(NDEBUG)
     if (wasLocked) _owner = pthread_self();

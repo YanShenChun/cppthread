@@ -124,12 +124,12 @@ bool ThreadImpl::join(unsigned long timeout) {
 
     {  // Release this ThreadImpl's lock while the joiner sleeps
 
-      _monitor.release();
+      _monitor.Release();
       Guard<Monitor> g3(impl->getMonitor());
 
       result = impl->_monitor.wait(timeout);
 
-      _monitor.acquire();
+      _monitor.Acquire();
     }
 
     // Update the joiner list
@@ -354,9 +354,9 @@ void ThreadImpl::dispatch(ThreadImpl* parent, ThreadImpl* impl, Task task) {
       ThreadImpl* joiner = *i;
       Monitor& m = joiner->getMonitor();
 
-      if (m.tryAcquire()) {
+      if (m.TryAcquire()) {
         m.notify();
-        m.release();
+        m.Release();
 
         i = impl->_joiners.erase(i);
 
@@ -370,9 +370,9 @@ void ThreadImpl::dispatch(ThreadImpl* parent, ThreadImpl* impl, Task task) {
       ThreadImpl* joiner = *i;
       Monitor& m = joiner->getMonitor();
 
-      m.acquire();
+      m.Acquire();
       m.notify();
-      m.release();
+      m.Release();
     }
   }
 

@@ -38,10 +38,9 @@ namespace zthread {
  * @version 2.3.0
  *
  * The Lockable interface defines a common method of adding general
- * <i>acquire-release</i>
- * semantics to an object. An <i>acquire-release</i> protocol does not
- * necessarily imply
- * exclusive access.
+ * <i>acquire-release</i> semantics to an object.
+ * An <i>acquire-release</i> protocol does not necessarily imply exclusive
+ * access.
  */
 class Lockable {
  public:
@@ -54,13 +53,12 @@ class Lockable {
    * This method may or may not block the caller for an indefinite amount
    * of time. Those details are defined by specializations of this class.
    *
-   * @exception Interrupted_Exception thrown if the calling thread is
-   * interrupted before
-   *            the operation completes.
+   * @exception InterruptedException thrown if the calling thread is
+   * interrupted before the operation completes.
    *
    * @post The Lockable is acquired only if no exception was thrown.
    */
-  virtual void acquire() = 0;
+  virtual void Acquire() = 0;
 
   /**
    * Attempt to acquire the Lockable object.
@@ -75,18 +73,16 @@ class Lockable {
    *
    * @return
    *   - <em>true</em>  if the operation completes and the Lockable is acquired
-   * before
-   *     the timeout expires.
+   *                    before the timeout expires.
    *   - <em>false</em> if the operation times out before the Lockable can be
-   * acquired.
+   *                    acquired.
    *
-   * @exception Interrupted_Exception thrown if the calling thread is
-   * interrupted before
-   *            the operation completes.
+   * @exception InterruptedException thrown if the calling thread is
+   * interrupted before the operation completes.
    *
    * @post The Lockable is acquired only if no exception was thrown.
    */
-  virtual bool tryAcquire(unsigned long timeout) = 0;
+  virtual bool TryAcquire(unsigned long timeout) = 0;
 
   /**
    * Release the Lockable object.
@@ -96,9 +92,9 @@ class Lockable {
    *
    * @post The Lockable is released only if no exception was thrown.
    */
-  virtual void release() = 0;
+  virtual void Release() = 0;
 };
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTLOCKABLE_H__

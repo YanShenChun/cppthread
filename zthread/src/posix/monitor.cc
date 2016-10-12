@@ -69,7 +69,7 @@ Monitor::STATE Monitor::wait(unsigned long ms) {
 
   // Unlock the external lock if a wait() is probably needed.
   // Access to the state is still serial.
-  _lock.release();
+  _lock.Release();
 
   // Wait for a transition in the state that is of interest, this
   // allows waits to exclude certain flags (e.g. INTERRUPTED)
@@ -128,7 +128,7 @@ Monitor::STATE Monitor::wait(unsigned long ms) {
   // Reaquire the external lock, keep from deadlocking threads calling
   // notify(), interrupt(), etc.
 
-  _lock.acquire();
+  _lock.Acquire();
 
   return state;
 }

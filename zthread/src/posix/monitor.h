@@ -65,13 +65,13 @@ class Monitor : public Status, private NonCopyable {
   ~Monitor();
 
   //! Acquire the lock for this monitor.
-  inline void acquire() { _lock.acquire(); }
+  inline void Acquire() { _lock.Acquire(); }
 
   //! Acquire the lock for this monitor.
-  inline bool tryAcquire() { return _lock.tryAcquire(); }
+  inline bool TryAcquire() { return _lock.TryAcquire(); }
 
   //! Release the lock for this monitor
-  inline void release() { _lock.release(); }
+  inline void Release() { _lock.Release(); }
 
   /**
    * Wait for a state change and atomically unlock the external lock.

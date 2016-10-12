@@ -108,7 +108,7 @@ void ConditionImpl<List>::signal() {
       ThreadImpl* impl = *i;
       Monitor& m = impl->getMonitor();
 
-      if (m.tryAcquire()) {
+      if (m.TryAcquire()) {
         // Notify the monitor & remove from the waiter list so time isn't
         // wasted checking it again.
         i = _waiters.erase(i);
@@ -117,7 +117,7 @@ void ConditionImpl<List>::signal() {
         // been ended (killed/interrupted/notify'd)
         bool woke = m.notify();
 
-        m.release();
+        m.Release();
 
         // Once notify() succeeds, return
         if (woke) return;
@@ -153,7 +153,7 @@ void ConditionImpl<List>::broadcast() {
       ThreadImpl* impl = *i;
       Monitor& m = impl->getMonitor();
 
-      if (m.tryAcquire()) {
+      if (m.TryAcquire()) {
         // Notify the monitor & remove from the waiter list so time isn't
         // wasted checking it again.
         i = _waiters.erase(i);
@@ -163,7 +163,7 @@ void ConditionImpl<List>::broadcast() {
         // waiting).
         m.notify();
 
-        m.release();
+        m.Release();
 
       } else
         ++i;
@@ -200,13 +200,13 @@ void ConditionImpl<List>::wait() {
     Guard<FastLock> g1(_lock);
 
     // Release the _predicateLock
-    _predicateLock.release();
+    _predicateLock.Release();
 
     // Stuff the waiter into the list
     _waiters.insert(self);
 
     // Move to the monitor's lock
-    m.acquire();
+    m.Acquire();
 
     {
       Guard<FastLock, UnlockedScope> g2(g1);
@@ -214,7 +214,7 @@ void ConditionImpl<List>::wait() {
     }
 
     // Move back to the Condition's lock
-    m.release();
+    m.Release();
 
     // Remove from waiter list, regarless of weather release() is called or
     // not. The monitor is sticky, so its possible a state 'stuck' from a
@@ -231,7 +231,7 @@ void ConditionImpl<List>::wait() {
 #if !defined(NDEBUG)
     try {
 #endif
-      _predicateLock.acquire();  // Should not throw
+      _predicateLock.Acquire();  // Should not throw
 #if !defined(NDEBUG)
     } catch (...) {
       assert(0);
@@ -275,7 +275,7 @@ bool ConditionImpl<List>::wait(unsigned long timeout) {
     Guard<FastLock> g1(_lock);
 
     // Release the _predicateLock
-    _predicateLock.release();
+    _predicateLock.Release();
 
     // Stuff the waiter into the list
     _waiters.insert(self);
@@ -284,14 +284,14 @@ bool ConditionImpl<List>::wait(unsigned long timeout) {
 
     // Don't bother waiting if the timeout is 0
     if (timeout) {
-      m.acquire();
+      m.Acquire();
 
       {
         Guard<FastLock, UnlockedScope> g2(g1);
         state = m.wait(timeout);
       }
 
-      m.release();
+      m.Release();
     }
 
     // Remove from waiter list, regarless of weather release() is called or
@@ -309,7 +309,7 @@ bool ConditionImpl<List>::wait(unsigned long timeout) {
 #if !defined(NDEBUG)
     try {
 #endif
-      _predicateLock.acquire();  // Should not throw
+      _predicateLock.Acquire();  // Should not throw
 #if !defined(NDEBUG)
     } catch (...) {
       assert(0);

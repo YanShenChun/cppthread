@@ -93,7 +93,7 @@ class ZTHREAD_API Mutex : public Lockable, private NonCopyable {
    *
    * @see Lockable::acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * Acquire a Mutex, possibly blocking until the current owner of the
@@ -123,7 +123,7 @@ class ZTHREAD_API Mutex : public Lockable, private NonCopyable {
    *
    * @see Lockable::tryAcquire(unsigned long timeout)
    */
-  virtual bool tryAcquire(unsigned long timeout);
+  virtual bool TryAcquire(unsigned long timeout);
 
   /**
    * Release a Mutex allowing another thread to acquire it.
@@ -138,7 +138,7 @@ class ZTHREAD_API Mutex : public Lockable, private NonCopyable {
    *
    * @see Lockable::release()
    */
-  virtual void release();
+  virtual void Release();
 };
 
 }  // namespace ZThread

@@ -87,14 +87,14 @@ class ZTHREAD_API FastMutex : public Lockable, private NonCopyable {
    * thrown.
    * @exception Interrupted_Exception never thrown
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * Release exclusive access. No safety or state checks are performed.
    *
    * @pre the caller should have previously acquired this lock
    */
-  virtual void release();
+  virtual void Release();
 
   /**
    * Try to acquire exclusive access to the mutex. The calling thread will block
@@ -116,7 +116,7 @@ class ZTHREAD_API FastMutex : public Lockable, private NonCopyable {
    * thrown.
    * @exception Interrupted_Exception never thrown
    */
-  virtual bool tryAcquire(unsigned long timeout);
+  virtual bool TryAcquire(unsigned long timeout);
 
 }; /* FastMutex */
 };

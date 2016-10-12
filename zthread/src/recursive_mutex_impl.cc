@@ -90,14 +90,14 @@ void RecursiveMutexImpl::acquire() {
 
       _waiters.push_back(&m);
 
-      m.acquire();
+      m.Acquire();
 
       {
         Guard<FastLock, UnlockedScope> g2(g1);
         state = m.wait();
       }
 
-      m.release();
+      m.Release();
 
       // Remove from waiter list, regarless of weather release() is called or
       // not. The monitor is sticky, so its possible a state 'stuck' from a
@@ -155,14 +155,14 @@ bool RecursiveMutexImpl::tryAcquire(unsigned long timeout) {
 
       // Don't bother waiting if the timeout is 0
       if (timeout) {
-        m.acquire();
+        m.Acquire();
 
         {
           Guard<FastLock, UnlockedScope> g2(g1);
           state = m.wait(timeout);
         }
 
-        m.release();
+        m.Release();
       }
 
       // Remove from waiter list, regarless of weather release() is called or
@@ -218,11 +218,11 @@ void RecursiveMutexImpl::release() {
       for (List::iterator i = _waiters.begin(); i != _waiters.end();) {
         // Try the monitor lock, if it cant be locked skip to the next waiter
         Monitor* n = *i;
-        if (n->tryAcquire()) {
+        if (n->TryAcquire()) {
           // If notify() is not sucessful, it is because the wait() has already
           // been ended (killed/interrupted/notify'd)
           bool woke = n->notify();
-          n->release();
+          n->Release();
 
           // Once notify() succeeds, return
           if (woke) return;

@@ -38,12 +38,12 @@ Mutex::~Mutex() {
 }
 
 // P
-void Mutex::acquire() { _impl->acquire(); }
+void Mutex::Acquire() { _impl->acquire(); }
 
 // P
-bool Mutex::tryAcquire(unsigned long ms) { return _impl->tryAcquire(ms); }
+bool Mutex::TryAcquire(unsigned long ms) { return _impl->tryAcquire(ms); }
 
 // V
-void Mutex::release() { _impl->release(); }
+void Mutex::Release() { _impl->release(); }
 
 }  // namespace ZThread

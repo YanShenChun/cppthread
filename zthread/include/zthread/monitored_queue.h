@@ -313,13 +313,13 @@ class MonitoredQueue : public Queue<T>, public Lockable {
   }
 
  public:
-  virtual void acquire() { _lock.acquire(); }
+  virtual void Acquire() { _lock.Acquire(); }
 
-  virtual bool tryAcquire(unsigned long timeout) {
-    return _lock.tryAcquire(timeout);
+  virtual bool TryAcquire(unsigned long timeout) {
+    return _lock.TryAcquire(timeout);
   }
 
-  virtual void release() { _lock.release(); }
+  virtual void Release() { _lock.Release(); }
 
 }; /* MonitoredQueue */
 
