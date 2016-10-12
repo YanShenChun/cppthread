@@ -6,6 +6,16 @@ file(GLOB SRCS
 )
 
 add_executable(demo ${SRCS})
-target_link_libraries(demo zthread pthread)
+
+set(DEMO_DEPENDS "zthread")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(DEMO_DEPENDS ${DEMO_DEPENDS} pthread)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(DEMO_DEPENDS ${DEMO_DEPENDS} pthread)
+else()
+endif()
+
+
+target_link_libraries(demo ${DEMO_DEPENDS})
 
 
