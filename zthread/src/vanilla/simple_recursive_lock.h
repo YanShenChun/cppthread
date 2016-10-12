@@ -63,7 +63,7 @@ class FastRecursiveLock : private NonCopyable {
     bool wasLocked = false;
 
     do {
-      _lock.acquire();
+      _lock.Acquire();
 
       // If there is no owner, or the owner is the caller
       // update the count
@@ -74,7 +74,7 @@ class FastRecursiveLock : private NonCopyable {
         wasLocked = true;
       }
 
-      _lock.release();
+      _lock.Release();
 
     } while (!wasLocked);
 
@@ -84,18 +84,18 @@ class FastRecursiveLock : private NonCopyable {
   inline void release() {
     assert(_owner == ThreadOps::self());
 
-    _lock.acquire();
+    _lock.Acquire();
 
     if (--_count == 0) _owner = ThreadOps::INVALID;
 
-    _lock.release();
+    _lock.Release();
   }
 
   inline bool tryAcquire(unsigned long timeout = 0) {
     ThreadOps self(ThreadOps::self());
     bool wasLocked = false;
 
-    _lock.acquire();
+    _lock.Acquire();
 
     if (_owner == ThreadOps::INVALID || _owner == self) {
       _owner = self;
@@ -104,7 +104,7 @@ class FastRecursiveLock : private NonCopyable {
       wasLocked = true;
     }
 
-    _lock.release();
+    _lock.Release();
 
     assert(!wasLocked || _owner == ThreadOps::self());
     return wasLocked;
