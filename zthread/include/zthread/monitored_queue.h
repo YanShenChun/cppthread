@@ -94,7 +94,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
    *
    * @see Queue::add(const T& item)
    */
-  virtual void add(const T& item) {
+  virtual void Add(const T& item) {
     Guard<LockType> g(_lock);
 
     // Allow no further additions in the canceled state
@@ -130,7 +130,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
    *
    * @see Queue::add(const T& item, unsigned long timeout)
    */
-  virtual bool add(const T& item, unsigned long timeout) {
+  virtual bool Add(const T& item, unsigned long timeout) {
     try {
       Guard<LockType> g(_lock, timeout);
 
@@ -165,7 +165,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
    * this function.
    * @post The value returned will have been removed from the Queue.
    */
-  virtual T next() {
+  virtual T Next() {
     Guard<LockType> g(_lock);
 
     while (_queue.size() == 0 && !_canceled) _notEmpty.Wait();
@@ -202,7 +202,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
    * this function.
    * @post The value returned will have been removed from the Queue.
    */
-  virtual T next(unsigned long timeout) {
+  virtual T Next(unsigned long timeout) {
     Guard<LockType> g(_lock, timeout);
 
     while (_queue.size() == 0 && !_canceled) {
@@ -229,7 +229,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
    *
    * @see Queue::cancel()
    */
-  virtual void cancel() {
+  virtual void Cancel() {
     Guard<LockType> g(_lock);
 
     _canceled = true;
@@ -239,7 +239,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
   /**
    * @see Queue::isCanceled()
    */
-  virtual bool isCanceled() {
+  virtual bool IsCanceled() {
     // Faster check since the queue will not become un-canceled
     if (_canceled) return true;
 
@@ -251,7 +251,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
   /**
    * @see Queue::size()
    */
-  virtual size_t size() {
+  virtual size_t Size() {
     Guard<LockType> g(_lock);
     return _queue.size();
   }
@@ -259,7 +259,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
   /**
    * @see Queue::size(unsigned long timeout)
    */
-  virtual size_t size(unsigned long timeout) {
+  virtual size_t Size(unsigned long timeout) {
     Guard<LockType> g(_lock, timeout);
     return _queue.size();
   }

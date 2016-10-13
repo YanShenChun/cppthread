@@ -60,7 +60,7 @@ class Queue : public Cancelable, private NonCopyable {
    * @post If no exception is thrown, a copy of <i>item</i> will have been added
    * to the Queue.
    */
-  virtual void add(const T& item) = 0;
+  virtual void Add(const T& item) = 0;
 
   /**
    * Add an object to this Queue.
@@ -82,7 +82,7 @@ class Queue : public Cancelable, private NonCopyable {
    * @post If this function returns true a copy of <i>item</i> will have been
    * added to the Queue.
    */
-  virtual bool add(const T& item, unsigned long timeout) = 0;
+  virtual bool Add(const T& item, unsigned long timeout) = 0;
 
   /**
    * Retrieve and remove a value from this Queue.
@@ -95,7 +95,7 @@ class Queue : public Cancelable, private NonCopyable {
    * this function.
    * @post The value returned will have been removed from the Queue.
    */
-  virtual T next() = 0;
+  virtual T Next() = 0;
 
   /**
    * Retrieve and remove a value from this Queue.
@@ -113,7 +113,7 @@ class Queue : public Cancelable, private NonCopyable {
    * this function.
    * @post The value returned will have been removed from the Queue.
    */
-  virtual T next(unsigned long timeout) = 0;
+  virtual T Next(unsigned long timeout) = 0;
 
   /**
    * Canceling a Queue disables it, disallowing further additions. Values
@@ -129,14 +129,14 @@ class Queue : public Cancelable, private NonCopyable {
    * @post The add() methods will throw a Cancellation_Exceptions from this
    * point on.
    */
-  virtual void cancel() = 0;
+  virtual void Cancel() = 0;
 
   /**
    * Count the values present in this Queue.
    *
    * @return <em>size_t</em> number of elements available in the Queue.
    */
-  virtual size_t size() = 0;
+  virtual size_t Size() = 0;
 
   /**
    * Count the values present in this Queue.
@@ -149,7 +149,7 @@ class Queue : public Cancelable, private NonCopyable {
    * @exception Timeout_Exception thrown if <i>timeout</i> milliseconds
    *            expire before a value becomes available
    */
-  virtual size_t size(unsigned long timeout) = 0;
+  virtual size_t Size(unsigned long timeout) = 0;
 
   /**
    * Test whether any values are available in this Queue.
@@ -160,7 +160,7 @@ class Queue : public Cancelable, private NonCopyable {
    */
   virtual bool empty() {
     try {
-      return size() == 0;
+      return Size() == 0;
 
     } catch (Cancellation_Exception&) {
     }
@@ -183,7 +183,7 @@ class Queue : public Cancelable, private NonCopyable {
    */
   virtual bool empty(unsigned long timeout) {
     try {
-      return size(timeout) == 0;
+      return Size(timeout) == 0;
 
     } catch (Cancellation_Exception&) {
     }

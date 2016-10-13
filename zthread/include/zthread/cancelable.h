@@ -74,7 +74,7 @@ class Cancelable {
    * @post The Cancelable object will have permanently transitioned to a
    *       disabled state; it will now refuse to accept new responsibility.
    */
-  virtual void cancel() = 0;
+  virtual void Cancel() = 0;
 
   /**
    * Determine if a Cancelable object has been canceled.
@@ -83,7 +83,7 @@ class Cancelable {
    *   - <em>true</em> if cancel() was called prior to this function.
    *   - <em>false</em> otherwise.
    */
-  virtual bool isCanceled() = 0;
+  virtual bool IsCanceled() = 0;
 
 }; /* Cancelable */
 

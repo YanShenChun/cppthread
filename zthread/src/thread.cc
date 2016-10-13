@@ -61,13 +61,13 @@ Priority Thread::getPriority() { return _impl->getPriority(); }
 
 bool Thread::interrupt() { return _impl->interrupt(); }
 
-void Thread::cancel() {
+void Thread::Cancel() {
   if (ThreadImpl::current() == _impl) throw InvalidOp_Exception();
 
   _impl->cancel();
 }
 
-bool Thread::isCanceled() { return _impl->isCanceled(); }
+bool Thread::IsCanceled() { return _impl->isCanceled(); }
 
 void Thread::sleep(unsigned long ms) { ThreadImpl::sleep(ms); }
 

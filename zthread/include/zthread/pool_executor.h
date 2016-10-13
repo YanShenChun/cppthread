@@ -134,12 +134,12 @@ class PoolExecutor : public Executor {
   /**
    * @see Cancelable::cancel()
    */
-  virtual void cancel();
+  virtual void Cancel();
 
   /**
    * @see Cancelable::isCanceled()
    */
-  virtual bool isCanceled();
+  virtual bool IsCanceled();
 
   /**
    * Block the calling thread until all tasks submitted prior to this invocation

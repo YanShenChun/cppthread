@@ -348,7 +348,7 @@ class ZTHREAD_API Thread : public Cancelable,
    *
    * @see Cancelable::isCanceled()
    */
-  virtual bool isCanceled();
+  virtual bool IsCanceled();
 
   /**
    * Interrupt and cancel this thread in a single operation. The thread will
@@ -360,7 +360,7 @@ class ZTHREAD_API Thread : public Cancelable,
    * @see Thread::interrupt()
    * @see Cancelable::cancel()
    */
-  virtual void cancel();
+  virtual void Cancel();
 
   /**
    * Put the currently executing thread to sleep for a given amount of

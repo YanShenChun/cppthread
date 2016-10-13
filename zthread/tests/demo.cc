@@ -23,5 +23,10 @@ int main() {
   zthread::Thread t2(new Func2);
   t2.Wait();
 
+  zthread::BlockingQueue<int, zthread::FastMutex> block_queue;
+  block_queue.Add(100);
+  block_queue.Add(200);
+  std::cout << "block_queue.Size == " << block_queue.Size() << std::endl;
+
   return 0;
 }

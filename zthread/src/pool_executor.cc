@@ -359,7 +359,7 @@ class ExecutorImpl {
     GroupedRunnable* runnable = new GroupedRunnable(task, _waitingQueue);
 
     try {
-      _taskQueue.add(ExecutorTask(runnable));
+      _taskQueue.Add(ExecutorTask(runnable));
 
     } catch (...) {
       // Incase the queue is canceled between the time the WaiterQueue is
@@ -403,7 +403,7 @@ class ExecutorImpl {
     // Draw the task from the queue
     for (;;) {
       try {
-        task = _taskQueue.next();
+        task = _taskQueue.Next();
         break;
 
       } catch (Interrupted_Exception&) {
@@ -427,9 +427,9 @@ class ExecutorImpl {
     return task;
   }
 
-  bool isCanceled() { return _taskQueue.isCanceled(); }
+  bool isCanceled() { return _taskQueue.IsCanceled(); }
 
-  void cancel() { _taskQueue.cancel(); }
+  void cancel() { _taskQueue.Cancel(); }
 
   bool wait(unsigned long timeout) { return _waitingQueue.wait(timeout); }
 };
@@ -508,9 +508,9 @@ void PoolExecutor::execute(const Task& task) {
   _impl->execute(task);
 }
 
-void PoolExecutor::cancel() { _impl->cancel(); }
+void PoolExecutor::Cancel() { _impl->cancel(); }
 
-bool PoolExecutor::isCanceled() { return _impl->isCanceled(); }
+bool PoolExecutor::IsCanceled() { return _impl->isCanceled(); }
 
 void PoolExecutor::Wait() { _impl->wait(0); }
 

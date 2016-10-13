@@ -34,9 +34,9 @@ void ConcurrentExecutor::interrupt() { _executor.interrupt(); }
 
 void ConcurrentExecutor::execute(const Task& task) { _executor.execute(task); }
 
-void ConcurrentExecutor::cancel() { _executor.cancel(); }
+void ConcurrentExecutor::cancel() { _executor.Cancel(); }
 
-bool ConcurrentExecutor::isCanceled() { return _executor.isCanceled(); }
+bool ConcurrentExecutor::isCanceled() { return _executor.IsCanceled(); }
 
 void ConcurrentExecutor::wait() { _executor.Wait(); }
 

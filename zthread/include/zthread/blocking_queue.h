@@ -43,55 +43,54 @@ namespace zthread {
  *
  * Like a LockedQueue, a BlockingQueue is a Queue implementation that provides
  * serialized access to the items added to it. It differs by causing threads
- * accessing the next() methods to block until a value becomes available.
+ * accessing the Next() methods to block until a value becomes available.
  */
 template <class T, class LockType, typename StorageType = std::deque<T> >
 class BlockingQueue : public Queue<T>, public Lockable {
   //! Serialize access
-  LockType _lock;
+  LockType lock_;
 
   //! Signaled when empty
-  Condition _notEmpty;
+  Condition not_empty_;
 
   //! Storage backing the queue
-  StorageType _queue;
+  StorageType queue_;
 
   //! Cancellation flag
-  volatile bool _canceled;
+  volatile bool canceled_;
 
  public:
   //! Create a new BlockingQueue
-  BlockingQueue() : _notEmpty(_lock), _canceled(false) {}
+  BlockingQueue() : not_empty_(lock_), canceled_(false) {}
 
   //! Destroy this BlockingQueue
   virtual ~BlockingQueue() {}
 
   /**
-   * @see Queue::add(const T& item)
+   * @see Queue::Add(const T& item)
    */
-  virtual void add(const T& item) {
-    Guard<LockType> g(_lock);
+  virtual void Add(const T& item) {
+    Guard<LockType> g(lock_);
 
-    if (_canceled) throw Cancellation_Exception();
+    if (canceled_) throw Cancellation_Exception();
 
-    _queue.push_back(item);
+    queue_.push_back(item);
 
-    _notEmpty.signal();
+    not_empty_.signal();
   }
 
   /**
-   * @see Queue::add(const T& item, unsigned long timeout)
+   * @see Queue::Add(const T& item, unsigned long timeout)
    */
-  virtual bool add(T item, unsigned long timeout) {
+  virtual bool Add(const T& item, unsigned long timeout) {
     try {
-      Guard<LockType> g(_lock, timeout);
+      Guard<LockType> g(lock_, timeout);
 
-      if (_canceled) throw Cancellation_Exception();
+      if (canceled_) throw Cancellation_Exception();
 
-      _queue.push_back(item);
+      queue_.push_back(item);
 
-      _notEmpty.signal();
-
+      not_empty_.signal();
     } catch (Timeout_Exception&) {
       return false;
     }
@@ -107,24 +106,23 @@ class BlockingQueue : public Queue<T>, public Lockable {
    * @exception Cancellation_Exception thrown if this Queue has been canceled.
    *
    * @exception Interrupted_Exception thrown if the calling thread is
-   * interrupted
-   *            before a value becomes available.
+   * interrupted before a value becomes available.
    *
-   * @pre  The Queue should not have been canceled prior to the invocation of
+   * @pre The Queue should not have been canceled prior to the invocation of
    * this function.
    * @post The value returned will have been removed from the Queue.
    *
-   * @see Queue::next()
+   * @see Queue::Next()
    */
-  virtual T next() {
-    Guard<LockType> g(_lock);
+  virtual T Next() {
+    Guard<LockType> g(lock_);
 
-    while (_queue.size() == 0 && !_canceled) _notEmpty.Wait();
+    while (queue_.size() == 0 && !canceled_) not_empty_.Wait();
 
-    if (_queue.size() == 0) throw Cancellation_Exception();
+    if (queue_.size() == 0) throw Cancellation_Exception();
 
-    T item = _queue.front();
-    _queue.pop_front();
+    T item = queue_.front();
+    queue_.pop_front();
 
     return item;
   }
@@ -138,85 +136,86 @@ class BlockingQueue : public Queue<T>, public Lockable {
    * @return <em>T</em> next available value
    *
    * @exception Cancellation_Exception thrown if this Queue has been canceled.
+   *
    * @exception Timeout_Exception thrown if the timeout expires before a value
    *            can be retrieved.
+   *
    * @exception Interrupted_Exception thrown if the calling thread is
-   * interrupted
-   *            before a value becomes available.
+   * interrupted before a value becomes available.
    *
    * @pre  The Queue should not have been canceled prior to the invocation of
    * this function.
    * @post The value returned will have been removed from the Queue.
    *
-   * @see Queue::next(unsigned long timeout)
+   * @see Queue::Next(unsigned long timeout)
    */
-  virtual T next(unsigned long timeout) {
-    Guard<LockType> g(_lock, timeout);
+  virtual T Next(unsigned long timeout) {
+    Guard<LockType> g(lock_, timeout);
 
-    while (_queue.size() == 0 && !_canceled) {
-      if (!_notEmpty.Wait(timeout)) throw Timeout_Exception();
+    while (queue_.size() == 0 && !canceled_) {
+      if (!not_empty_.Wait(timeout)) throw Timeout_Exception();
     }
 
-    if (_queue.size() == 0) throw Cancellation_Exception();
+    if (queue_.size() == 0) throw Cancellation_Exception();
 
-    T item = _queue.front();
-    _queue.pop_front();
+    T item = queue_.front();
+    queue_.pop_front();
 
     return item;
   }
 
   /**
-   * @see Queue::cancel()
+   * @see Queue::Cancel()
    *
-   * @post If threads are blocked on one of the next() functions then
+   * @post If threads are blocked on one of the Next() functions then
    *       they will be awakened with a Cancellation_Exception.
    */
-  virtual void cancel() {
-    Guard<LockType> g(_lock);
+  virtual void Cancel() {
+    Guard<LockType> g(lock_);
 
-    _notEmpty.broadcast();
-    _canceled = true;
+    not_empty_.broadcast();
+    canceled_ = true;
   }
 
   /**
-   * @see Queue::isCanceled()
+   * @see Queue::IsCanceled()
    */
-  virtual bool isCanceled() {
+  virtual bool IsCanceled() {
     // Faster check since the queue will not become un-canceled
-    if (_canceled) return true;
+    if (canceled_) return true;
 
-    Guard<LockType> g(_lock);
+    Guard<LockType> g(lock_);
 
-    return _canceled;
+    return canceled_;
   }
 
   /**
-   * @see Queue::size()
+   * @see Queue::Size()
    */
-  virtual size_t size() {
-    Guard<LockType> g(_lock);
-    return _queue.size();
+  virtual size_t Size() {
+    Guard<LockType> g(lock_);
+    return queue_.size();
   }
 
   /**
-   * @see Queue::size(unsigned long timeout)
+   * @see Queue::Size(unsigned long timeout)
    */
-  virtual size_t size(unsigned long timeout) {
-    Guard<LockType> g(_lock, timeout);
-    return _queue.size();
+  virtual size_t Size(unsigned long timeout) {
+    Guard<LockType> g(lock_, timeout);
+    return queue_.size();
   }
 
  public:
-  virtual void acquire() { _lock.acquire(); }
+  virtual void Acquire() { lock_.Acquire(); }
 
-  virtual bool tryAcquire(unsigned long timeout) {
-    return _lock.tryAcquire(timeout);
+  virtual bool TryAcquire(unsigned long timeout) {
+    return lock_.TryAcquire(timeout);
   }
 
-  virtual void release() { _lock.release(); }
+  virtual void Release() { lock_.Release(); }
 
 }; /* BlockingQueue */
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTBLOCKINGQUEUE_H__
