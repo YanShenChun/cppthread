@@ -46,8 +46,8 @@ namespace zthread {
  * a set of threads. A Barrier is constructed for a fixed number (<i>N</i>) of
  * threads.
  * Threads attempting to wait() on a Barrier (<i> 1 - N</i>) will block until
- * the <i>N</i>th
- * thread arrives. The <i>N</i>th thread will awaken all the the others.
+ * the <i>N</i>th thread arrives. The <i>N</i>th thread will awaken all the the
+ * others.
  *
  * An optional Runnable command may be associated with the Barrier. This will be
  * run() when the <i>N</i>th thread arrives and Barrier is not broken.
@@ -67,29 +67,29 @@ namespace zthread {
 template <unsigned int Count, class LockType>
 class Barrier : public Waitable, private NonCopyable {
   //! Broken flag
-  bool _broken;
+  bool broken_;
   //! Task flag
-  bool _haveTask;
+  bool haveTask_;
   //! Thread count
-  unsigned int _count;
+  unsigned int count_;
   //! Wait generation
-  unsigned int _generation;
+  unsigned int generation_;
   //! Serialize access
-  LockType _lock;
+  LockType lock_;
   //! Signaled when all thread arrive
-  Condition _arrived;
+  Condition arrived_;
   //! Command to run when all the thread arrive
-  Task _task;
+  Task task_;
 
  public:
   //! Create a Barrier
   Barrier()
-      : _broken(false),
-        _haveTask(false),
-        _count(Count),
-        _generation(0),
-        _arrived(_lock),
-        _task(0) {}
+      : broken_(false),
+        haveTask_(false),
+        count_(Count),
+        generation_(0),
+        arrived_(lock_),
+        task_(0) {}
 
   /**
    * Create a Barrier that executes the given task when all threads arrive
@@ -98,12 +98,12 @@ class Barrier : public Waitable, private NonCopyable {
    * @param task Task to associate with this Barrier
    */
   Barrier(const Task& task)
-      : _broken(false),
-        _haveTask(true),
-        _count(Count),
-        _generation(0),
-        _arrived(_lock),
-        _task(task) {}
+      : broken_(false),
+        haveTask_(true),
+        count_(Count),
+        generation_(0),
+        arrived_(lock_),
+        task_(task) {}
 
   //! Destroy this Barrier
   virtual ~Barrier() {}
@@ -113,14 +113,12 @@ class Barrier : public Waitable, private NonCopyable {
    * an indefinite
    * amount of time.
    *
-   * @exception BrokenBarrier_Exception thrown when any thread has left a wait
-   * on this
-   *            Barrier as a result of an error.
+   * @exception BrokenBarrierException thrown when any thread has left a wait
+   * on this Barrier as a result of an error.
+   *
    * @exception Interrupted_Exception thrown when the calling thread is
-   * interrupted.
-   *            A thread may be interrupted at any time, prematurely ending a
-   * wait
-   *            for one thread and breaking the barrier for all threads
+   * interrupted. A thread may be interrupted at any time, prematurely ending a
+   * wait for one thread and breaking the barrier for all threads
    *
    * @see Waitable::wait()
    *
@@ -128,75 +126,65 @@ class Barrier : public Waitable, private NonCopyable {
    * @post If an exception was thrown, the barrier is broken
    */
   virtual void Wait() {
-    Guard<LockType> g(_lock);
+    Guard<LockType> g(lock_);
 
-    if (_broken) throw BrokenBarrier_Exception();
+    if (broken_) throw BrokenBarrier_Exception();
 
     // Break the barrier if an arriving thread is interrupted
     if (Thread::interrupted()) {
       // Release the other waiter, propagate the exception
-      _arrived.broadcast();
-      _broken = true;
+      arrived_.broadcast();
+      broken_ = true;
 
       throw Interrupted_Exception();
     }
 
-    if (--_count == 0) {
+    if (--count_ == 0) {
       // Wake the other threads if this was the last
       // arriving thread
-      _arrived.broadcast();
+      arrived_.broadcast();
 
       // Try to run the associated task, if it throws then
       // break the barrier and propagate the exception
       try {
-        if (_task) _task->run();
-
-        _generation++;
-
+        if (task_) task_->run();
+        generation_++;
       } catch (Synchronization_Exception&) {
-        _broken = true;
+        broken_ = true;
         throw;
-
       } catch (...) {
         assert(0);
       }
-
     } else {
-      int myGeneration = _generation;
+      int my_generation = generation_;
 
       try {
         // Wait for the other threads to arrive
-        _arrived.Wait();
-
+        arrived_.Wait();
       } catch (Interrupted_Exception&) {
         // Its possible for a thread to be interrupted before the
         // last thread arrives. If the interrupted thread hasn't
         // resumed, then just propagate the interruption
-
-        if (myGeneration != _generation)
+        if (my_generation != generation_)
           Thread().interrupt();
-
         else
-          _broken = true;
-
+          broken_ = true;
       } catch (Synchronization_Exception&) {
         // Break the barrier and propagate the exception
-        _broken = true;
+        broken_ = true;
         throw;
       }
 
       // If the thread woke because it was notified by the thread
       // that broke the barrier, throw.
-      if (_broken) throw BrokenBarrier_Exception();
+      if (broken_) throw BrokenBarrier_Exception();
     }
   }
 
   /**
    * Enter barrier and wait for the other threads to arrive. This can block up
-   * to the
-   * amount of time specified with the timeout parameter. The barrier will not
-   * break
-   * if a thread leaves this function due to a timeout.
+   * to the amount of time specified with the timeout parameter. The barrier
+   * will not break if a thread leaves this function due to a timeout.
    *
    * @param timeout maximum amount of time, in milliseconds, to wait before
    *
@@ -205,14 +193,12 @@ class Barrier : public Waitable, private NonCopyable {
    *                   <i>timeout</i> milliseconds elapse.
    *   - <em>false</em> otherwise.
    *
-   * @exception BrokenBarrier_Exception thrown when any thread has left a wait
-   * on this
-   *            Barrier as a result of an error.
-   * @exception Interrupted_Exception thrown when the calling thread is
-   * interrupted.
-   *            A thread may be interrupted at any time, prematurely ending a
-   * wait
-   *            for one thread and breaking the barrier for all threads
+   * @exception BrokenBarrierException thrown when any thread has left a wait
+   * on this Barrier as a result of an error.
+   *
+   * @exception InterruptedException thrown when the calling thread is
+   * interrupted. A thread may be interrupted at any time, prematurely ending a
+   * wait for one thread and breaking the barrier for all threads
    *
    * @see Waitable::wait(unsigned long timeout)
    *
@@ -220,66 +206,59 @@ class Barrier : public Waitable, private NonCopyable {
    * @post If an exception was thrown, the barrier is broken
    */
   virtual bool Wait(unsigned long timeout) {
-    Guard<LockType> g(_lock);
+    Guard<LockType> g(lock_);
 
-    if (_broken) throw BrokenBarrier_Exception();
+    if (broken_) throw BrokenBarrier_Exception();
 
     // Break the barrier if an arriving thread is interrupted
     if (Thread::interrupted()) {
       // Release the other waiter, propagate the exception
-      _arrived.broadcast();
-      _broken = true;
+      arrived_.broadcast();
+      broken_ = true;
 
       throw Interrupted_Exception();
     }
 
-    if (--_count == 0) {
+    if (--count_ == 0) {
       // Wake the other threads if this was the last
       // arriving thread
-      _arrived.broadcast();
+      arrived_.broadcast();
 
       // Try to run the associated task, if it throws then
       // break the barrier and propagate the exception
       try {
-        if (_task) _task->run();
-
-        _generation++;
-
+        if (task_) task_->run();
+        generation_++;
       } catch (Synchronization_Exception&) {
-        _broken = true;
+        broken_ = true;
         throw;
-
       } catch (...) {
         assert(0);
       }
-
     } else {
-      int myGeneration = _generation;
+      int my_generation = generation_;
 
       try {
         // Wait for the other threads to arrive
-        if (!_arrived.Wait(timeout)) _broken = true;
-
+        if (!arrived_.Wait(timeout)) broken_ = true;
       } catch (Interrupted_Exception&) {
         // Its possible for a thread to be interrupted before the
         // last thread arrives. If the interrupted thread hasn't
         // resumed, then just propagate the interruption
 
-        if (myGeneration != _generation)
+        if (my_generation != generation_)
           Thread().interrupt();
-
         else
-          _broken = true;
-
+          broken_ = true;
       } catch (Synchronization_Exception&) {
         // Break the barrier and propagate the exception
-        _broken = true;
+        broken_ = true;
         throw;
       }
 
       // If the thread woke because it was notified by the thread
       // that broke the barrier, throw.
-      if (_broken) throw BrokenBarrier_Exception();
+      if (broken_) throw BrokenBarrier_Exception();
     }
 
     return true;
@@ -292,11 +271,11 @@ class Barrier : public Waitable, private NonCopyable {
    * @post the Barrier is broken, all waiting threads will throw the
    *       BrokenBarrier_Exception
    */
-  void shatter() {
-    Guard<LockType> g(_lock);
+  void Shatter() {
+    Guard<LockType> g(lock_);
 
-    _broken = true;
-    _arrived.broadcast();
+    broken_ = true;
+    arrived_.broadcast();
   }
 
   /**
@@ -304,15 +283,15 @@ class Barrier : public Waitable, private NonCopyable {
    *
    * @post the Barrier is no longer Broken and can be used again.
    */
-  void reset() {
-    Guard<LockType> g(_lock);
+  void Reset() {
+    Guard<LockType> g(lock_);
 
-    _broken = false;
-    _generation++;
-    _count = Count;
+    broken_ = false;
+    generation_++;
+    count_ = Count;
   }
 };
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTBARRIER_H__
