@@ -183,9 +183,9 @@ class BiasedReadWriteLock : public ReadWriteLock {
     }
 
     if (wake_writer)
-      cond_write_.signal();
+      cond_write_.Signal();
     else if (wake_reader)
-      cond_read_.signal();
+      cond_read_.Signal();
   }
 
   void BeforeWrite() {
@@ -241,9 +241,9 @@ class BiasedReadWriteLock : public ReadWriteLock {
     }
 
     if (wake_writer)
-      cond_write_.signal();
+      cond_write_.Signal();
     else if (wake_reader)
-      cond_read_.signal();
+      cond_read_.Signal();
   }
 
   bool AllowReader() { return (active_writers_ == 0); }

@@ -76,7 +76,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
 
     queue_.push_back(item);
 
-    not_empty_.signal();
+    not_empty_.Signal();
   }
 
   /**
@@ -90,7 +90,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
 
       queue_.push_back(item);
 
-      not_empty_.signal();
+      not_empty_.Signal();
     } catch (Timeout_Exception&) {
       return false;
     }
@@ -173,7 +173,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
   virtual void Cancel() {
     Guard<LockType> g(lock_);
 
-    not_empty_.broadcast();
+    not_empty_.Broadcast();
     canceled_ = true;
   }
 

@@ -132,7 +132,7 @@ class BoundedQueue : public Queue<T>, public Lockable {
     if (canceled_) throw Cancellation_Exception();
 
     queue_.push_back(item);
-    not_empty_.signal();  // Wake any waiters
+    not_empty_.Signal();  // Wake any waiters
   }
 
   /**
@@ -173,7 +173,7 @@ class BoundedQueue : public Queue<T>, public Lockable {
       if (canceled_) throw Cancellation_Exception();
 
       queue_.push_back(item);
-      not_empty_.signal();  // Wake any waiters
+      not_empty_.Signal();  // Wake any waiters
     } catch (Timeout_Exception&) {
       return false;
     }
@@ -208,10 +208,10 @@ class BoundedQueue : public Queue<T>, public Lockable {
     T item = queue_.front();
     queue_.pop_front();
 
-    not_full_.signal();  // Wake any thread trying to add
+    not_full_.Signal();  // Wake any thread trying to add
 
     if (queue_.size() == 0)  // Wake empty waiters
-      is_empty_.broadcast();
+      is_empty_.Broadcast();
 
     return item;
   }
@@ -249,10 +249,10 @@ class BoundedQueue : public Queue<T>, public Lockable {
     T item = queue_.front();
     queue_.pop_front();
 
-    not_full_.signal();  // Wake add() waiters
+    not_full_.Signal();  // Wake add() waiters
 
     if (queue_.size() == 0)  // Wake empty() waiters
-      is_empty_.broadcast();
+      is_empty_.Broadcast();
 
     return item;
   }
@@ -271,7 +271,7 @@ class BoundedQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(lock_);
 
     canceled_ = true;
-    not_empty_.broadcast();  // Wake next() waiters
+    not_empty_.Broadcast();  // Wake next() waiters
   }
 
   /**

@@ -133,7 +133,7 @@ class Barrier : public Waitable, private NonCopyable {
     // Break the barrier if an arriving thread is interrupted
     if (Thread::interrupted()) {
       // Release the other waiter, propagate the exception
-      arrived_.broadcast();
+      arrived_.Broadcast();
       broken_ = true;
 
       throw Interrupted_Exception();
@@ -142,7 +142,7 @@ class Barrier : public Waitable, private NonCopyable {
     if (--count_ == 0) {
       // Wake the other threads if this was the last
       // arriving thread
-      arrived_.broadcast();
+      arrived_.Broadcast();
 
       // Try to run the associated task, if it throws then
       // break the barrier and propagate the exception
@@ -213,7 +213,7 @@ class Barrier : public Waitable, private NonCopyable {
     // Break the barrier if an arriving thread is interrupted
     if (Thread::interrupted()) {
       // Release the other waiter, propagate the exception
-      arrived_.broadcast();
+      arrived_.Broadcast();
       broken_ = true;
 
       throw Interrupted_Exception();
@@ -222,7 +222,7 @@ class Barrier : public Waitable, private NonCopyable {
     if (--count_ == 0) {
       // Wake the other threads if this was the last
       // arriving thread
-      arrived_.broadcast();
+      arrived_.Broadcast();
 
       // Try to run the associated task, if it throws then
       // break the barrier and propagate the exception
@@ -275,7 +275,7 @@ class Barrier : public Waitable, private NonCopyable {
     Guard<LockType> g(lock_);
 
     broken_ = true;
-    arrived_.broadcast();
+    arrived_.Broadcast();
   }
 
   /**

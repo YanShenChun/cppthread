@@ -44,8 +44,8 @@ void Condition::Wait() { _impl->wait(); }
 
 bool Condition::Wait(unsigned long ms) { return _impl->wait(ms); }
 
-void Condition::signal() { _impl->signal(); }
+void Condition::Signal() { _impl->signal(); }
 
-void Condition::broadcast() { _impl->broadcast(); }
+void Condition::Broadcast() { _impl->broadcast(); }
 
 }  // namespace ZThread

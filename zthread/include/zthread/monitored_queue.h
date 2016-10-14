@@ -102,7 +102,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
 
     _queue.push_back(item);
 
-    _notEmpty.signal();  // Wake one waiter
+    _notEmpty.Signal();  // Wake one waiter
   }
 
   /**
@@ -138,7 +138,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
 
       _queue.push_back(item);
 
-      _notEmpty.signal();
+      _notEmpty.Signal();
 
     } catch (Timeout_Exception&) {
       return false;
@@ -177,7 +177,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     _queue.pop_front();
 
     if (_queue.size() == 0)  // Wake empty waiters
-      _isEmpty.broadcast();
+      _isEmpty.Broadcast();
 
     return item;
   }
@@ -216,7 +216,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     _queue.pop_front();
 
     if (_queue.size() == 0)  // Wake empty waiters
-      _isEmpty.broadcast();
+      _isEmpty.Broadcast();
 
     return item;
   }
@@ -233,7 +233,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock);
 
     _canceled = true;
-    _notEmpty.broadcast();  // Wake next() waiters
+    _notEmpty.Broadcast();  // Wake next() waiters
   }
 
   /**
