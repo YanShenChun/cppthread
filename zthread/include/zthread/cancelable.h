@@ -39,25 +39,22 @@ namespace zthread {
  * @version 2.3.0
  *
  * The Cancelable interface defines a common method of adding general
- * <i>disable-and-exit</i>
- * semantics to some object. By cancel()ing a Cancelable object, a request is
- * made to disable that object.
+ * <i>disable-and-exit</i> semantics to some object. By cancel()ing a Cancelable
+ * object, a request is made to disable that object.
  *
  * <b>Disabling</b>
  *
  * A cancel()ed object may not necessarily abort it work immediately. Often, it
- * much more
- * elegant for a cancel()ed object to complete handling whatever
- * responsibilities have
- * been assigned to it, but it will <i>not</i> take on any new responsibility.
+ * much more  elegant for a cancel()ed object to complete handling whatever
+ * responsibilities have been assigned to it, but it will <i>not</i> take on any
+ * new responsibility.
  *
  * <b>Exiting</b>
  *
  * A cancel()ed should complete its responsibilities as soon as possible.
  * Canceling is not only a request to stop taking on new responsibility, and to
  * complete its current responsibility. Its also a request to complete dealing
- * with its
- * current responsibilities, quickly when possible.
+ * with its current responsibilities, quickly when possible.
  */
 class Cancelable {
  public:
@@ -87,6 +84,6 @@ class Cancelable {
 
 }; /* Cancelable */
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTCANCELABLE_H__
