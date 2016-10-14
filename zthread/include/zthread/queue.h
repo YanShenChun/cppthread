@@ -158,7 +158,7 @@ class Queue : public Cancelable, private NonCopyable {
    *  - <em>true</em> if there are no values available.
    *  - <em>false</em> if there <i>are</i> values available.
    */
-  virtual bool empty() {
+  virtual bool Empty() {
     try {
       return Size() == 0;
 
@@ -181,7 +181,7 @@ class Queue : public Cancelable, private NonCopyable {
    * @exception Timeout_Exception thrown if <i>timeout</i> milliseconds
    *            expire before a value becomes available
    */
-  virtual bool empty(unsigned long timeout) {
+  virtual bool Empty(unsigned long timeout) {
     try {
       return Size(timeout) == 0;
 

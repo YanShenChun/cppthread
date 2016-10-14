@@ -43,42 +43,40 @@ namespace zthread {
  * @version 2.3.0
  *
  * A BoundedQueue provides serialized access to a set of values. It differs from
- * other
- * Queues by adding a maximum capacity, giving it the following properties:
+ * other Queues by adding a maximum capacity, giving it the following 
+ * properties:
  *
  * - Threads calling the empty() methods will be blocked until the BoundedQueue
- * becomes empty.
+ *   becomes empty.
  * - Threads calling the next() methods will be blocked until the BoundedQueue
- * has a value to
- *   return.
+ *   has a value to return.
  * - Threads calling the add() methods will be blocked until the number of
- * values in the
- *   Queue drops below the maximum capacity.
+ *   values in the Queue drops below the maximum capacity.
  *
  * @see Queue
  */
 template <class T, class LockType, typename StorageType = std::deque<T> >
 class BoundedQueue : public Queue<T>, public Lockable {
   //! Maximum capacity for the Queue
-  size_t _capacity;
+  size_t capacity_;
 
   //! Serialize access
-  LockType _lock;
+  LockType lock_;
 
   //! Signaled if not full
-  Condition _notFull;
+  Condition not_full_;
 
   //! Signaled if not empty
-  Condition _notEmpty;
+  Condition not_empty_;
 
   //! Signaled if empty
-  Condition _isEmpty;
+  Condition is_empty_;
 
   //! Storage backing the queue
-  StorageType _queue;
+  StorageType queue_;
 
   //! Cancellation flag
-  volatile bool _canceled;
+  volatile bool canceled_;
 
  public:
   /**
@@ -88,11 +86,11 @@ class BoundedQueue : public Queue<T>, public Lockable {
    *        at any time
    */
   BoundedQueue(size_t capacity)
-      : _notFull(_lock),
-        _notEmpty(_lock),
-        _isEmpty(_lock),
-        _capacity(capacity),
-        _canceled(false) {}
+      : not_full_(lock_),
+        not_empty_(lock_),
+        is_empty_(lock_),
+        capacity_(capacity),
+        canceled_(false) {}
 
   //! Destroy this Queue
   virtual ~BoundedQueue() {}
@@ -102,7 +100,7 @@ class BoundedQueue : public Queue<T>, public Lockable {
    *
    * @return <i>size_t</i> maximum capacity
    */
-  size_t capacity() { return _capacity; }
+  size_t capacity() { return capacity_; }
 
   /**
    * Add a value to this Queue.
@@ -110,58 +108,52 @@ class BoundedQueue : public Queue<T>, public Lockable {
    * If the number of values in the queue matches the value returned by
    * <i>capacity</i>()
    * then the calling thread will be blocked until at least one value is removed
-   * from
-   * the Queue.
+   * from the Queue.
    *
    * @param item value to be added to the Queue
    *
-   * @exception Cancellation_Exception thrown if this Queue has been canceled.
-   * @exception Interrupted_Exception thrown if the thread was interrupted while
-   * waiting
-   *            to add a value
+   * @exception CancellationException thrown if this Queue has been canceled.
+   * @exception InterruptedException thrown if the thread was interrupted while
+   * waiting to add a value
    *
    * @pre  The Queue should not have been canceled prior to the invocation of
-   * this function.
+   *       this function.
    * @post If no exception is thrown, a copy of <i>item</i> will have been added
-   * to the Queue.
+   *       to the Queue.
    *
    * @see Queue::add(const T& item)
    */
-  virtual void add(const T& item) {
-    Guard<LockType> g(_lock);
+  virtual void Add(const T& item) {
+    Guard<LockType> g(lock_);
 
     // Wait for the capacity of the Queue to drop
-    while ((_queue.size() == _capacity) && !_canceled) _notFull.Wait();
+    while ((queue_.size() == capacity_) && !canceled_) not_full_.Wait();
 
-    if (_canceled) throw Cancellation_Exception();
+    if (canceled_) throw Cancellation_Exception();
 
-    _queue.push_back(item);
-    _notEmpty.signal();  // Wake any waiters
+    queue_.push_back(item);
+    not_empty_.signal();  // Wake any waiters
   }
 
   /**
    * Add a value to this Queue.
    *
    * If the number of values in the queue matches the value returned by
-   * <i>capacity</i>()
-   * then the calling thread will be blocked until at least one value is removed
-   * from
-   * the Queue.
+   * <i>capacity</i>() then the calling thread will be blocked until at least 
+   * one value is removed from the Queue.
    *
    * @param item value to be added to the Queue
    * @param timeout maximum amount of time (milliseconds) this method may block
    *        the calling thread.
    *
    * @return
-   *   - <em>true</em> if a copy of <i>item</i> can be added before
-   * <i>timeout</i>
-   *     milliseconds elapse.
+   *   - <em>true</em> if a copy of <i>item</i> can be added before <i>timeout
+   *   </i> milliseconds elapse.
    *   - <em>false</em> otherwise.
    *
-   * @exception Cancellation_Exception thrown if this Queue has been canceled.
-   * @exception Interrupted_Exception thrown if the thread was interrupted while
-   * waiting
-   *            to add a value
+   * @exception CancellationException thrown if this Queue has been canceled.
+   * @exception InterruptedException thrown if the thread was interrupted while
+   * waiting to add a value
    *
    * @pre  The Queue should not have been canceled prior to the invocation of
    * this function.
@@ -170,19 +162,18 @@ class BoundedQueue : public Queue<T>, public Lockable {
    *
    * @see Queue::add(const T& item, unsigned long timeout)
    */
-  virtual bool add(const T& item, unsigned long timeout) {
+  virtual bool Add(const T& item, unsigned long timeout) {
     try {
-      Guard<LockType> g(_lock, timeout);
+      Guard<LockType> g(lock_, timeout);
 
       // Wait for the capacity of the Queue to drop
-      while ((_queue.size() == _capacity) && !_canceled)
-        if (!_notFull.Wait(timeout)) return false;
+      while ((queue_.size() == capacity_) && !canceled_)
+        if (!not_full_.Wait(timeout)) return false;
 
-      if (_canceled) throw Cancellation_Exception();
+      if (canceled_) throw Cancellation_Exception();
 
-      _queue.push_back(item);
-      _notEmpty.signal();  // Wake any waiters
-
+      queue_.push_back(item);
+      not_empty_.signal();  // Wake any waiters
     } catch (Timeout_Exception&) {
       return false;
     }
@@ -194,35 +185,33 @@ class BoundedQueue : public Queue<T>, public Lockable {
    * Retrieve and remove a value from this Queue.
    *
    * If invoked when there are no values present to return then the calling
-   * thread
-   * will be blocked until a value arrives in the Queue.
+   * thread will be blocked until a value arrives in the Queue.
    *
    * @return <em>T</em> next available value
    *
-   * @exception Cancellation_Exception thrown if this Queue has been canceled.
-   * @exception Interrupted_Exception thrown if the thread was interrupted while
-   * waiting
-   *            to retrieve a value
+   * @exception CancellationException thrown if this Queue has been canceled.
+   * @exception InterruptedException thrown if the thread was interrupted while
+   * waiting to retrieve a value
    *
    * @pre  The Queue should not have been canceled prior to the invocation of
    * this function.
    * @post The value returned will have been removed from the Queue.
    */
-  virtual T next() {
-    Guard<LockType> g(_lock);
+  virtual T Next() {
+    Guard<LockType> g(lock_);
 
-    while (_queue.size() == 0 && !_canceled) _notEmpty.Wait();
+    while (queue_.size() == 0 && !canceled_) not_empty_.Wait();
 
-    if (_queue.size() == 0)  // Queue canceled
+    if (queue_.size() == 0)  // Queue canceled
       throw Cancellation_Exception();
 
-    T item = _queue.front();
-    _queue.pop_front();
+    T item = queue_.front();
+    queue_.pop_front();
 
-    _notFull.signal();  // Wake any thread trying to add
+    not_full_.signal();  // Wake any thread trying to add
 
-    if (_queue.size() == 0)  // Wake empty waiters
-      _isEmpty.broadcast();
+    if (queue_.size() == 0)  // Wake empty waiters
+      is_empty_.broadcast();
 
     return item;
   }
@@ -231,40 +220,39 @@ class BoundedQueue : public Queue<T>, public Lockable {
    * Retrieve and remove a value from this Queue.
    *
    * If invoked when there are no values present to return then the calling
-   * thread
-   * will be blocked until a value arrives in the Queue.
+   * thread will be blocked until a value arrives in the Queue.
    *
    * @param timeout maximum amount of time (milliseconds) this method may block
    *        the calling thread.
    *
    * @return <em>T</em> next available value
    *
-   * @exception Cancellation_Exception thrown if this Queue has been canceled.
-   * @exception Timeout_Exception thrown if the timeout expires before a value
+   * @exception CancellationException thrown if this Queue has been canceled.
+   * @exception TimeoutException thrown if the timeout expires before a value
    *            can be retrieved.
    *
    * @pre  The Queue should not have been canceled prior to the invocation of
    * this function.
    * @post The value returned will have been removed from the Queue.
    */
-  virtual T next(unsigned long timeout) {
-    Guard<LockType> g(_lock, timeout);
+  virtual T Next(unsigned long timeout) {
+    Guard<LockType> g(lock_, timeout);
 
     // Wait for items to be added
-    while (_queue.size() == 0 && !_canceled) {
-      if (!_notEmpty.Wait(timeout)) throw Timeout_Exception();
+    while (queue_.size() == 0 && !canceled_) {
+      if (!not_empty_.Wait(timeout)) throw Timeout_Exception();
     }
 
-    if (_queue.size() == 0)  // Queue canceled
+    if (queue_.size() == 0)  // Queue canceled
       throw Cancellation_Exception();
 
-    T item = _queue.front();
-    _queue.pop_front();
+    T item = queue_.front();
+    queue_.pop_front();
 
-    _notFull.signal();  // Wake add() waiters
+    not_full_.signal();  // Wake add() waiters
 
-    if (_queue.size() == 0)  // Wake empty() waiters
-      _isEmpty.broadcast();
+    if (queue_.size() == 0)  // Wake empty() waiters
+      is_empty_.broadcast();
 
     return item;
   }
@@ -279,39 +267,39 @@ class BoundedQueue : public Queue<T>, public Lockable {
    *
    * @see Queue::cancel()
    */
-  virtual void cancel() {
-    Guard<LockType> g(_lock);
+  virtual void Cancel() {
+    Guard<LockType> g(lock_);
 
-    _canceled = true;
-    _notEmpty.broadcast();  // Wake next() waiters
+    canceled_ = true;
+    not_empty_.broadcast();  // Wake next() waiters
   }
 
   /**
    * @see Queue::isCanceled()
    */
-  virtual bool isCanceled() {
+  virtual bool IsCanceled() {
     // Faster check since the Queue will not become un-canceled
-    if (_canceled) return true;
+    if (canceled_) return true;
 
-    Guard<LockType> g(_lock);
+    Guard<LockType> g(lock_);
 
-    return _canceled;
+    return canceled_;
   }
 
   /**
    * @see Queue::size()
    */
-  virtual size_t size() {
-    Guard<LockType> g(_lock);
-    return _queue.size();
+  virtual size_t Size() {
+    Guard<LockType> g(lock_);
+    return queue_.size();
   }
 
   /**
    * @see Queue::size(unsigned long timeout)
    */
-  virtual size_t size(unsigned long timeout) {
-    Guard<LockType> g(_lock, timeout);
-    return _queue.size();
+  virtual size_t Size(unsigned long timeout) {
+    Guard<LockType> g(lock_, timeout);
+    return queue_.size();
   }
 
   /**
@@ -326,11 +314,11 @@ class BoundedQueue : public Queue<T>, public Lockable {
    *
    * @see Queue::empty()
    */
-  virtual bool empty() {
-    Guard<LockType> g(_lock);
+  virtual bool Empty() {
+    Guard<LockType> g(lock_);
 
-    while (_queue.size() > 0)  // Wait for an empty signal
-      _isEmpty.Wait();
+    while (queue_.size() > 0)  // Wait for an empty signal
+      is_empty_.Wait();
 
     return true;
   }
@@ -348,31 +336,31 @@ class BoundedQueue : public Queue<T>, public Lockable {
    *  - <em>true</em> if there are no values available.
    *  - <em>false</em> if there <i>are</i> values available.
    *
-   * @exception Timeout_Exception thrown if <i>timeout</i> milliseconds
+   * @exception TimeoutException thrown if <i>timeout</i> milliseconds
    *            expire before a value becomes available
    *
    * @see Queue::empty()
    */
-  virtual bool empty(unsigned long timeout) {
-    Guard<LockType> g(_lock, timeout);
+  virtual bool Empty(unsigned long timeout) {
+    Guard<LockType> g(lock_, timeout);
 
-    while (_queue.size() > 0)  // Wait for an empty signal
-      _isEmpty.Wait(timeout);
+    while (queue_.size() > 0)  // Wait for an empty signal
+      is_empty_.Wait(timeout);
 
     return true;
   }
 
  public:
-  virtual void acquire() { _lock.acquire(); }
+  virtual void Acquire() { lock_.Acquire(); }
 
-  virtual bool tryAcquire(unsigned long timeout) {
-    return _lock.tryAcquire(timeout);
+  virtual bool TryAcquire(unsigned long timeout) {
+    return lock_.TryAcquire(timeout);
   }
 
-  virtual void release() { _lock.release(); }
+  virtual void Release() { lock_.Release(); }
 
 }; /* BoundedQueue */
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTBOUNDEDQUEUE_H__

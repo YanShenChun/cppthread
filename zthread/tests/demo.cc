@@ -28,5 +28,15 @@ int main() {
   block_queue.Add(200);
   std::cout << "block_queue.Size == " << block_queue.Size() << std::endl;
 
+  zthread::BoundedQueue<int, zthread::FastMutex> bounded_queue(5);
+  bounded_queue.Add(100);
+  bounded_queue.Add(200);
+  std::cout << "bounded_queue.Size == " << bounded_queue.Size() << std::endl;
+  
+
+  // TODO: why must block here? issue? by design?
+  //std::cout << "bounded_queue.Empty = " << bounded_queue.Empty() << std::endl;
+
+
   return 0;
 }

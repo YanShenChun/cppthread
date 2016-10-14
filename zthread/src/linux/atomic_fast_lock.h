@@ -82,7 +82,10 @@ class FastLock : private NonCopyable {
 #endif
 
     __sync_add_and_fetch(reinterpret_cast<int*>(&_value), 1);
+
+#if !defined(NDEBUG)
     _owner = 0;
+#endif
   }
 
   inline bool TryAcquire(unsigned long timeout = 0) {
