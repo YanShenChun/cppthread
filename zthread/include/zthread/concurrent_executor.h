@@ -43,7 +43,7 @@ namespace zthread {
  * @see PoolExecutor.
  */
 class ConcurrentExecutor : public Executor {
-  PoolExecutor _executor;
+  PoolExecutor executor_;
 
  public:
   //! Create a ConcurrentExecutor
@@ -51,10 +51,8 @@ class ConcurrentExecutor : public Executor {
 
   /**
    * Interrupting a ConcurrentExecutor will cause the thread running the tasks
-   * to be
-   * be interrupted once during the execution of each task that has been
-   * submitted
-   * at the time this function is called.
+   * to be interrupted once during the execution of each task that has been
+   * submitted at the time this function is called.
    *
    * Tasks that are submitted after this function is called will
    * not be interrupt()ed; unless this function is invoked again().
@@ -67,15 +65,15 @@ class ConcurrentExecutor : public Executor {
    *
    *   // Submit p Tasks
    *   for(size_t n = 0; n < p; n++)
-   *     executor.execute(new aRunnable);
+   *     executor.Execute(new aRunnable);
    *
    *   // Tasks [m, p) may be interrupted, where m is the first task that has
    *   // not completed at the time the interrupt() is invoked.
-   *   executor.interrupt();
+   *   executor.Interrupt();
    *
    *   // Submit (q - p) Tasks
    *   for(size_t n = p; n < q; n++)
-   *     executor.execute(new Chore);
+   *     executor.Execute(new Chore);
    *
    *   // Tasks [p, q) are not interrupted
    *
@@ -83,7 +81,7 @@ class ConcurrentExecutor : public Executor {
    *
    * @endcode
    */
-  virtual void interrupt();
+  virtual void Interrupt();
 
   /**
    * Submit a Task to this Executor. This will not block the current thread
@@ -91,39 +89,38 @@ class ConcurrentExecutor : public Executor {
    * in the context of the single thread driving all the Tasks submitted to this
    * Executor.
    *
-   * @exception Cancellation_Exception thrown if this Executor has been
+   * @exception CancellationException thrown if this Executor has been
    * canceled.
    * The Task being submitted will not be executed by this Executor.
    *
-   * @exception Synchronization_Exception thrown only in the event of an error
+   * @exception SynchronizationException thrown only in the event of an error
    * in the implementation of the library.
    *
-   * @see Executor::execute(const Task&)
+   * @see Executor::Execute(const Task&)
    */
-  virtual void execute(const Task&);
+  virtual void Execute(const Task&);
 
   /**
-   * @see Cancelable::cancel()
+   * @see Cancelable::Cancel()
    */
-  virtual void cancel();
+  virtual void Cancel();
 
   /**
    * @see Cancelable::isCanceled()
    */
-  virtual bool isCanceled();
+  virtual bool IsCanceled();
 
   /**
    * @see PoolExecutor::wait()
    */
-  virtual void wait();
+  virtual void Wait();
 
   /**
-   * @see PoolExecutor::wait(unsigned long timeout)
+   * @see PoolExecutor::Wait(unsigned long timeout)
    */
-  virtual bool wait(unsigned long timeout);
-
+  virtual bool Wait(unsigned long timeout);
 }; /* ConcurrentExecutor */
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTCONCURRENTEXECUTOR_H__

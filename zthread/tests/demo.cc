@@ -5,14 +5,21 @@
 class Func1 : public zthread::Runnable {
   public:
     void run() {
-      std::cout << "Hello,world from Func1" << std::endl;
+      std::cout << "Thread::Func Hello,world from Func1" << std::endl;
     }
 };
 
 class Func2 : public zthread::Runnable {
   public:
     void run() {
-      std::cout << "Hello,world from Func2" << std::endl;
+      std::cout << "Thread::Func Hello,world from Func2" << std::endl;
+    }
+};
+
+class DemoFunc : public zthread::Runnable {
+  public:
+    void run() {
+      std::cout << "Concurrent::Func DemoFunc" << std::endl;
     }
 };
 
@@ -43,5 +50,12 @@ int main() {
   
   std::cout << "testing ClassLockable.." << std::endl;
   zthread::ClassLockable<SimpleClass, zthread::FastMutex> class_lock;
+
+  zthread::ConcurrentExecutor executor;
+
+   // Submit p Tasks
+  for(size_t n = 0; n < 4; n++)
+     executor.Execute(new DemoFunc);
+
   return 0;
 }

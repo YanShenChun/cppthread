@@ -28,19 +28,19 @@
 
 namespace zthread {
 
-ConcurrentExecutor::ConcurrentExecutor() : _executor(1) {}
+ConcurrentExecutor::ConcurrentExecutor() : executor_(1) {}
 
-void ConcurrentExecutor::interrupt() { _executor.interrupt(); }
+void ConcurrentExecutor::Interrupt() { executor_.Interrupt(); }
 
-void ConcurrentExecutor::execute(const Task& task) { _executor.execute(task); }
+void ConcurrentExecutor::Execute(const Task& task) { executor_.Execute(task); }
 
-void ConcurrentExecutor::cancel() { _executor.Cancel(); }
+void ConcurrentExecutor::Cancel() { executor_.Cancel(); }
 
-bool ConcurrentExecutor::isCanceled() { return _executor.IsCanceled(); }
+bool ConcurrentExecutor::IsCanceled() { return executor_.IsCanceled(); }
 
-void ConcurrentExecutor::wait() { _executor.Wait(); }
+void ConcurrentExecutor::Wait() { executor_.Wait(); }
 
-bool ConcurrentExecutor::wait(unsigned long timeout) {
-  return _executor.Wait(timeout);
+bool ConcurrentExecutor::Wait(unsigned long timeout) {
+  return executor_.Wait(timeout);
 }
-}
+} // namespace zthread

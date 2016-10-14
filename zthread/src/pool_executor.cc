@@ -492,7 +492,7 @@ PoolExecutor::~PoolExecutor() {
   }
 }
 
-void PoolExecutor::interrupt() { _impl->interrupt(); }
+void PoolExecutor::Interrupt() { _impl->interrupt(); }
 
 void PoolExecutor::size(size_t n) {
   if (n < 1) throw InvalidOp_Exception();
@@ -502,7 +502,7 @@ void PoolExecutor::size(size_t n) {
 
 size_t PoolExecutor::size() { return _impl->workers(); }
 
-void PoolExecutor::execute(const Task& task) {
+void PoolExecutor::Execute(const Task& task) {
   // Enqueue the task, the Queue will reject it with a
   // Cancelation_Exception if the Executor has been canceled
   _impl->execute(task);

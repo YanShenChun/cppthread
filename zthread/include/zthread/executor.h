@@ -46,8 +46,8 @@ namespace zthread {
  * <b>Executing</b>
  *
  * - <em>execute</em>()ing task with an Executor will submit the task,
- * scheduling
- *   it for execution at some future time depending on the Executor being used.
+ * scheduling it for execution at some future time depending on the Executor 
+ * being used.
  *
  * <b>Disabling</b>
  *
@@ -63,9 +63,8 @@ namespace zthread {
  * <b>Waiting</b>
  *
  * - <em>wait</em>()ing on a PoolExecutor will block the calling thread
- *   until all tasks that were submitted prior to the invocation of this
- * function
- *   have completed.
+ *   until all tasks that were submitted prior to the invocation of this 
+ *   function have completed.
  *
  * @see Cancelable
  * @see Waitable
@@ -76,7 +75,7 @@ class Executor : public Cancelable, public Waitable, private NonCopyable {
    * If supported by the Executor, interrupt all tasks submitted prior to
    * the invocation of this function.
    */
-  virtual void interrupt() = 0;
+  virtual void Interrupt() = 0;
 
   /**
    * Submit a task to this Executor.
@@ -87,13 +86,12 @@ class Executor : public Cancelable, public Waitable, private NonCopyable {
    * @post The submitted task will be run at some point in the future by this
    * Executor.
    *
-   * @exception Cancellation_Exception thrown if the Executor was canceled prior
-   * to
-   *            the invocation of this function.
+   * @exception CancellationException thrown if the Executor was canceled prior
+   * to the invocation of this function.
    */
-  virtual void execute(const Task& task) = 0;
+  virtual void Execute(const Task& task) = 0;
 };
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTEXECUTOR_H__

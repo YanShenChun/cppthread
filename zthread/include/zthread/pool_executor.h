@@ -88,7 +88,7 @@ class PoolExecutor : public Executor {
    * @post Any thread already executing a task which was submitted prior to the
    *       invocation of this function will be interrupted.
    */
-  virtual void interrupt();
+  virtual void Interrupt();
 
   /**
    * Alter the number of threads being used to execute submitted tasks.
@@ -129,7 +129,7 @@ class PoolExecutor : public Executor {
    * @see PoolExecutor::cancel()
    * @see Executor::execute(const Task& task)
    */
-  virtual void execute(const Task& task);
+  virtual void Execute(const Task& task);
 
   /**
    * @see Cancelable::cancel()
@@ -150,8 +150,7 @@ class PoolExecutor : public Executor {
    *            before the set of tasks being wait for can complete.
    *
    * @see Waitable::wait()
-   */
-  virtual void Wait();
+   */ virtual void Wait();
 
   /**
    * Block the calling thread until all tasks submitted prior to this invocation
