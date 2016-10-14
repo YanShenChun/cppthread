@@ -43,29 +43,29 @@ namespace zthread {
  */
 template <typename ClassType, class LockType = Mutex>
 class ClassLockable : public Lockable {
-  static CountedPtr<LockType> _instance;
-  CountedPtr<LockType> _lock;
+  static CountedPtr<LockType> instance_;
+  CountedPtr<LockType> lock_;
 
  public:
   //! Create a ClassLockable
-  ClassLockable() : _lock(_instance) {}
+  ClassLockable() : lock_(instance_) {}
 
-  //! acquire() the ClassLockable
-  virtual void acquire() { _lock->acquire(); }
+  //! Acquire() the ClassLockable
+  virtual void Acquire() { lock_->Acquire(); }
 
-  //! tryAcquire() the ClassLockable
-  virtual bool tryAcquire(unsigned long timeout) {
-    return _lock->tryAcquire(timeout);
+  //! TryAcquire() the ClassLockable
+  virtual bool TryAcquire(unsigned long timeout) {
+    return lock_->TryAcquire(timeout);
   }
 
-  //! release() the ClassLockable
-  virtual void release() { _lock->release(); }
+  //! Release() the ClassLockable
+  virtual void Release() { lock_->Release(); }
 };
 
 template <typename ClassType, class LockType>
-CountedPtr<LockType> ClassLockable<ClassType, LockType>::_instance(
+CountedPtr<LockType> ClassLockable<ClassType, LockType>::instance_(
     new LockType);
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTCLASSLOCKABLE_H__

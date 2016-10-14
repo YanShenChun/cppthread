@@ -16,6 +16,10 @@ class Func2 : public zthread::Runnable {
     }
 };
 
+class SimpleClass {
+
+};
+
 int main() {
   zthread::Thread t1(new Func1);
   t1.Wait();
@@ -32,11 +36,12 @@ int main() {
   bounded_queue.Add(100);
   bounded_queue.Add(200);
   std::cout << "bounded_queue.Size == " << bounded_queue.Size() << std::endl;
-  
 
   // TODO: why must block here? issue? by design?
   //std::cout << "bounded_queue.Empty = " << bounded_queue.Empty() << std::endl;
-
-
+  //
+  
+  std::cout << "testing ClassLockable.." << std::endl;
+  zthread::ClassLockable<SimpleClass, zthread::FastMutex> class_lock;
   return 0;
 }
