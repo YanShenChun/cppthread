@@ -83,7 +83,7 @@ class FastLock : private NonCopyable {
    *
    * @exception None
    */
-  inline void acquire() {
+  inline void Acquire() {
     while (::InterlockedCompareExchange(const_cast<LPLONG>(&_lock), 1, 0) != 0)
       ::Sleep(0);
   }
@@ -93,7 +93,7 @@ class FastLock : private NonCopyable {
    *
    * @exception None
    */
-  inline void release() {
+  inline void Release() {
     ::InterlockedExchange(const_cast<LPLONG>(&_lock), (LONG)0);
   }
 
@@ -105,7 +105,7 @@ class FastLock : private NonCopyable {
    * @return bool
    * @exception Synchronization_Exception - not thrown
    */
-  inline bool tryAcquire(unsigned long timeout = 0) {
+  inline bool TryAcquire(unsigned long timeout = 0) {
     return ::InterlockedCompareExchange(const_cast<LPLONG>(&_lock), 1, 0) == 0;
   }
 

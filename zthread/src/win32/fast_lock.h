@@ -69,7 +69,7 @@ class FastLock : private NonCopyable {
 
   ~FastLock() { ::CloseHandle(_hMutex); }
 
-  void acquire() {
+  void Acquire() {
     if (::WaitForSingleObject(_hMutex, INFINITE) != WAIT_OBJECT_0) {
       assert(0);
       throw Synchronization_Exception();
@@ -88,7 +88,7 @@ class FastLock : private NonCopyable {
 #endif
   }
 
-  void release() {
+  void Release() {
 #ifndef NDEBUG
     _locked = false;
 #endif
@@ -99,7 +99,7 @@ class FastLock : private NonCopyable {
     }
   }
 
-  bool tryAcquire(unsigned long timeout = 0) {
+  bool TryAcquire(unsigned long timeout = 0) {
     switch (::WaitForSingleObject(_hMutex, timeout)) {
       case WAIT_OBJECT_0:
 

@@ -55,18 +55,18 @@ Monitor::STATE Monitor::wait(unsigned long ms) {
 
   // Serialize access to the state of the Monitor
   // and test the state to determine if a wait is needed.
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   if (pending(ANYTHING)) {
     // Return without waiting when possible
     state = next();
 
-    _waitLock.release();
+    _waitLock.Release();
     return state;
   }
   // Unlock the external lock if a wait() is probably needed.
   // Access to the state is still serial.
-  _lock.release();
+  _lock.Release();
 
   // Wait for a transition in the state that is of interest, this
   // allows waits to exclude certain flags (e.g. INTERRUPTED)
@@ -79,7 +79,7 @@ Monitor::STATE Monitor::wait(unsigned long ms) {
   _waiting = true;
 
   // Block until the event is set.
-  _waitLock.release();
+  _waitLock.Release();
 
   // The event is manual reset so this lack of atmoicity will not
   // be an issue
@@ -88,7 +88,7 @@ Monitor::STATE Monitor::wait(unsigned long ms) {
       ::WaitForSingleObject(_handle, ((ms == 0) ? INFINITE : (DWORD)ms));
 
   // Reacquire serialized access to the state
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   // Awaken only when the event is set or the timeout expired
   assert(dwResult == WAIT_OBJECT_0 || dwResult == WAIT_TIMEOUT);
@@ -102,18 +102,18 @@ Monitor::STATE Monitor::wait(unsigned long ms) {
   ::ResetEvent(_handle);
 
   // Acquire the internal lock & release the external lock
-  _waitLock.release();
+  _waitLock.Release();
 
   // Reaquire the external lock, keep from deadlocking threads calling
   // notify(), interrupt(), etc.
-  _lock.acquire();
+  _lock.Acquire();
 
   return state;
 }
 
 bool Monitor::interrupt() {
   // Serialize access to the state
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   bool wasInterruptable = !pending(INTERRUPTED);
   bool hadWaiter = _waiting;
@@ -134,7 +134,7 @@ bool Monitor::interrupt() {
       wasInterruptable = !(_owner == ::GetCurrentThreadId());
   }
 
-  _waitLock.release();
+  _waitLock.Release();
 
   // Only returns true when an interrupted thread is not currently blocked
   return wasInterruptable;
@@ -142,19 +142,19 @@ bool Monitor::interrupt() {
 
 bool Monitor::isInterrupted() {
   // Serialize access to the state
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   bool wasInterrupted = pending(INTERRUPTED);
   clear(INTERRUPTED);
 
-  _waitLock.release();
+  _waitLock.Release();
 
   return wasInterrupted;
 }
 
 bool Monitor::notify() {
   // Serialize access to the state
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   bool wasNotifyable = !pending(INTERRUPTED);
 
@@ -170,14 +170,14 @@ bool Monitor::notify() {
       }
   }
 
-  _waitLock.release();
+  _waitLock.Release();
 
   return wasNotifyable;
 }
 
 bool Monitor::cancel() {
   // Serialize access to the state
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   bool wasInterrupted = !pending(INTERRUPTED);
   bool hadWaiter = _waiting;
@@ -195,20 +195,20 @@ bool Monitor::cancel() {
       }
   }
 
-  _waitLock.release();
+  _waitLock.Release();
 
   return wasInterrupted;
 }
 
 bool Monitor::isCanceled() {
   // Serialize access to the state
-  _waitLock.acquire();
+  _waitLock.Acquire();
 
   bool wasCanceled = examine(CANCELED);
 
   if (_owner == ::GetCurrentThreadId()) clear(INTERRUPTED);
 
-  _waitLock.release();
+  _waitLock.Release();
 
   return wasCanceled;
 }

@@ -32,3 +32,10 @@ zthread/build
 
 # vi[m] swap files
 *.swp
+
+
+Debug/
+out/
+tmp/
+*.suo
+*.user
