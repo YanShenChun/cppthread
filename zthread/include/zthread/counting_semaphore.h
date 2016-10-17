@@ -51,7 +51,7 @@ class FifoSemaphoreImpl;
  * Threads blocked on a CountingSemaphore are resumed in FIFO order.
  */
 class ZTHREAD_API CountingSemaphore : public Lockable, private NonCopyable {
-  FifoSemaphoreImpl* _impl;
+  FifoSemaphoreImpl* impl_;
 
  public:
   /**
@@ -67,23 +67,23 @@ class ZTHREAD_API CountingSemaphore : public Lockable, private NonCopyable {
   /**
    * <i>Provided to reflect the traditional Semaphore semantics</i>
    *
-   * @see acquire()
+   * @see Acquire()
    */
-  void wait();
+  void Wait();
 
   /**
    * <i>Provided to reflect the traditional Semaphore semantics</i>
    *
    * @see tryAcquire(unsigned long timeout)
    */
-  bool tryWait(unsigned long timeout);
+  bool TryWait(unsigned long timeout);
 
   /**
    * <i>Provided to reflect the traditional Semaphore semantics</i>
    *
-   * @see release()
+   * @see Release()
    */
-  void post();
+  void Post();
 
   /**
    * Get the current count of the semaphore.
@@ -93,7 +93,7 @@ class ZTHREAD_API CountingSemaphore : public Lockable, private NonCopyable {
    *
    * @return <em>int</em> count
    */
-  virtual int count();
+  virtual int Count();
 
   /**
    * Decrement the count, blocking that calling thread if the count becomes 0 or
@@ -109,13 +109,12 @@ class ZTHREAD_API CountingSemaphore : public Lockable, private NonCopyable {
    *   - <em>false</em> otherwise.
    *
    * @exception Interrupted_Exception thrown when the calling thread is
-   * interrupted.
-   *            A thread may be interrupted at any time, prematurely ending any
-   * wait.
+   * interrupted. A thread may be interrupted at any time, prematurely ending
+   * any wait.
    *
-   * @see Lockable::tryAcquire(unsigned long timeout)
+   * @see Lockable::TryAcquire(unsigned long timeout)
    */
-  virtual bool tryAcquire(unsigned long timeout);
+  virtual bool TryAcquire(unsigned long timeout);
 
   /**
    * Decrement the count, blocking that calling thread if the count becomes 0 or
@@ -123,22 +122,21 @@ class ZTHREAD_API CountingSemaphore : public Lockable, private NonCopyable {
    * raised above 0 or if an exception is thrown.
    *
    * @exception Interrupted_Exception thrown when the calling thread is
-   * interrupted.
-   *            A thread may be interrupted at any time, prematurely ending any
-   * wait.
+   * interrupted. A thread may be interrupted at any time, prematurely ending
+   * any wait.
    *
-   * @see Lockable::acquire()
+   * @see Lockable::Acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * Increment the count, unblocking one thread if count is positive.
    *
-   * @see Lockable::release()
+   * @see Lockable::Release()
    */
-  virtual void release();
+  virtual void Release();
 };
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTCOUNTINGSEMAPHORE_H__

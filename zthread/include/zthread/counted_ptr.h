@@ -58,33 +58,33 @@ class CountedPtr {
 #endif
 #endif
 
-  CountT* _count;
-  T* _instance;
+  CountT* count_;
+  T* instance_;
 
  public:
-  CountedPtr() : _count(0), _instance(0) {}
+  CountedPtr() : count_(0), instance_(0) {}
 
 #if !defined(__MWERKS__)
 #if !defined(_MSC_VER) || (_MSC_VER > 1200)
 
-  explicit CountedPtr(T* raw) : _count(new CountT()), _instance(raw) {
-    (*_count)++;
+  explicit CountedPtr(T* raw) : count_(new CountT()), instance_(raw) {
+    (*count_)++;
   }
 
 #endif
 #endif
 
   template <typename U>
-  explicit CountedPtr(U* raw) : _count(new CountT()), _instance(raw) {
-    (*_count)++;
+  explicit CountedPtr(U* raw) : count_(new CountT()), instance_(raw) {
+    (*count_)++;
   }
 
 #if !defined(__MWERKS__)
 #if !defined(_MSC_VER) || (_MSC_VER > 1200)
 
   CountedPtr(const CountedPtr& ptr)
-      : _count(ptr._count), _instance(ptr._instance) {
-    if (_count) (*_count)++;
+      : count_(ptr.count_), instance_(ptr.instance_) {
+    if (count_) (*count_)++;
   }
 
 #endif
@@ -92,15 +92,15 @@ class CountedPtr {
 
   template <typename U, typename V>
   CountedPtr(const CountedPtr<U, V>& ptr)
-      : _count(ptr._count), _instance(ptr._instance) {
-    if (_count) (*_count)++;
+      : count_(ptr.count_), instance_(ptr.instance_) {
+    if (count_) (*count_)++;
   }
 
   ~CountedPtr() {
-    if (_count && --(*_count) == 0) {
-      if (_instance) delete _instance;
+    if (count_ && --(*count_) == 0) {
+      if (instance_) delete instance_;
 
-      delete _count;
+      delete count_;
     }
   }
 
@@ -134,8 +134,8 @@ class CountedPtr {
 #if !defined(_MSC_VER) || (_MSC_VER > 1200)
 
   void swap(CountedPtr& ptr) {
-    std::swap(_count, ptr._count);
-    std::swap(_instance, ptr._instance);
+    std::swap(count_, ptr.count_);
+    std::swap(instance_, ptr.instance_);
   }
 
 #endif
@@ -143,8 +143,8 @@ class CountedPtr {
 
   template <typename U, typename V>
   void swap(CountedPtr<U, V>& ptr) {
-    std::swap(_count, ptr._count);
-    std::swap(_instance, ptr._instance);
+    std::swap(count_, ptr.count_);
+    std::swap(instance_, ptr.instance_);
   }
 
 // Convience operators
@@ -152,27 +152,27 @@ class CountedPtr {
 #if !defined(__MWERKS__)
 #if !defined(_MSC_VER) || (_MSC_VER > 1200)
 
-  bool less(const CountedPtr& ptr) const { return _instance < ptr._instance; }
+  bool less(const CountedPtr& ptr) const { return instance_ < ptr.instance_; }
 
 #endif
 #endif
 
   template <typename U, typename V>
   bool less(const CountedPtr<U, V>& ptr) const {
-    return _instance < ptr._instance;
+    return instance_ < ptr.instance_;
   }
 
 #if !defined(__MWERKS__)
 #if !defined(_MSC_VER) || (_MSC_VER > 1200)
 
-  bool equal(const CountedPtr& ptr) const { return _count == ptr._count; }
+  bool equal(const CountedPtr& ptr) const { return count_ == ptr.count_; }
 
 #endif
 #endif
 
   template <typename U, typename V>
   bool equal(const CountedPtr<U, V>& ptr) const {
-    return _count == ptr._count;
+    return count_ == ptr.count_;
   }
 
   friend inline bool operator==(const CountedPtr& lhs, const CountedPtr& rhs) {
@@ -184,23 +184,23 @@ class CountedPtr {
   }
 
   T& operator*() {
-    assert(_instance != 0);
-    return *_instance;
+    assert(instance_ != 0);
+    return *instance_;
   }
 
   T* operator->() {
-    assert(_instance != 0);
-    return _instance;
+    assert(instance_ != 0);
+    return instance_;
   }
 
   const T* operator->() const {
-    assert(_instance != 0);
-    return _instance;
+    assert(instance_ != 0);
+    return instance_;
   }
 
-  bool operator!() const { return _instance == 0; }
+  bool operator!() const { return instance_ == 0; }
 
-  operator bool() const { return _instance != 0; }
+  operator bool() const { return instance_ != 0; }
 
 }; /* CountedPtr */
 
@@ -256,7 +256,7 @@ inline void swap(CountedPtr<U, V> const& lhs, CountedPtr<U, V> const& rhs) {
 #endif
 #endif
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #ifdef _MSC_VER
 #pragma warning(pop)

@@ -32,33 +32,32 @@ using namespace zthread;
 namespace zthread {
 
 CountingSemaphore::CountingSemaphore(int initialCount) {
-  _impl = new FifoSemaphoreImpl(initialCount, 0, false);
+  impl_ = new FifoSemaphoreImpl(initialCount, 0, false);
 }
 
 CountingSemaphore::~CountingSemaphore() {
   try {
-    if (_impl != 0) delete _impl;
-
+    if (impl_ != 0) delete impl_;
   } catch (...) {
   }
 }
 
-void CountingSemaphore::wait() { _impl->acquire(); }
+void CountingSemaphore::Wait() { impl_->Acquire(); }
 
-bool CountingSemaphore::tryWait(unsigned long ms) {
-  return _impl->tryAcquire(ms);
+bool CountingSemaphore::TryWait(unsigned long ms) {
+  return impl_->TryAcquire(ms);
 }
 
-void CountingSemaphore::post() { _impl->release(); }
+void CountingSemaphore::Post() { impl_->Release(); }
 
-int CountingSemaphore::count() { return _impl->count(); }
+int CountingSemaphore::Count() { return impl_->Count(); }
 
-void CountingSemaphore::acquire() { _impl->acquire(); }
+void CountingSemaphore::Acquire() { impl_->Acquire(); }
 
-bool CountingSemaphore::tryAcquire(unsigned long ms) {
-  return _impl->tryAcquire(ms);
+bool CountingSemaphore::TryAcquire(unsigned long ms) {
+  return impl_->TryAcquire(ms);
 }
 
-void CountingSemaphore::release() { _impl->release(); }
+void CountingSemaphore::Release() { impl_->Release(); }
 
 }  // namespace ZThread

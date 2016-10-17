@@ -11,8 +11,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all
- * copies or substantial portions of the Software.
- *
+ * copies or substantial portions of the Software.  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -51,22 +50,22 @@ class Monitor;
 template <typename List>
 class SemaphoreImpl {
   //! List of waiting events
-  List _waiters;
+  List waiters_;
 
   //! Serialize access to this object
-  FastLock _lock;
+  FastLock lock_;
 
   //! Current count
-  volatile int _count;
+  volatile int count_;
 
   //! Maximum count if any
-  volatile int _maxCount;
+  volatile int max_count_;
 
   //! Flag for bounded or unbounded count
-  volatile bool _checked;
+  volatile bool checked_;
 
   //! Entry count
-  volatile int _entryCount;
+  volatile int entry_count_;
 
  public:
   /**
@@ -76,18 +75,18 @@ class SemaphoreImpl {
    * @exception Initialization_Exception thrown if resources could not be
    * properly allocated
    */
-  SemaphoreImpl(int count, unsigned int maxCount, bool checked)
-      : _count(count), _maxCount(maxCount), _checked(checked), _entryCount(0) {}
+  SemaphoreImpl(int count, unsigned int max_count, bool checked)
+      : count_(count), max_count_(max_count), checked_(checked), entry_count_(0) {}
 
   ~SemaphoreImpl();
 
-  void acquire();
+  void Acquire();
 
-  void release();
+  void Release();
 
-  bool tryAcquire(unsigned long timeout);
+  bool TryAcquire(unsigned long timeout);
 
-  int count();
+  int Count();
 };
 
 /**
@@ -97,10 +96,10 @@ template <typename List>
 SemaphoreImpl<List>::~SemaphoreImpl() {
 #ifndef NDEBUG
 
-  if (_waiters.size() > 0) {
+  if (waiters_.size() > 0) {
     ZTDEBUG(
         "** You are destroying a semaphore which is blocking %zd threads. **\n",
-        _waiters.size());
+        waiters_.size());
     assert(0);  // Destroyed semaphore while in use
   }
 
@@ -113,9 +112,9 @@ SemaphoreImpl<List>::~SemaphoreImpl() {
  * @return int
  */
 template <typename List>
-int SemaphoreImpl<List>::count() {
-  Guard<FastLock> g(_lock);
-  return _count;
+int SemaphoreImpl<List>::Count() {
+  Guard<FastLock> g(lock_);
+  return count_;
 }
 
 /**
@@ -125,22 +124,22 @@ int SemaphoreImpl<List>::count() {
  * @exception Synchronization_Exception thrown if there is some other error.
  */
 template <typename List>
-void SemaphoreImpl<List>::acquire() {
+void SemaphoreImpl<List>::Acquire() {
   // Get the monitor for the current thread
   ThreadImpl* self = ThreadImpl::current();
   Monitor& m = self->getMonitor();
 
   Monitor::STATE state;
 
-  Guard<FastLock> g1(_lock);
+  Guard<FastLock> g1(lock_);
 
   // Update the count without waiting if possible.
-  if (_count > 0 && _entryCount == 0) _count--;
+  if (count_ > 0 && entry_count_ == 0) count_--;
 
   // Otherwise, wait() for the lock by placing the waiter in the list
   else {
-    ++_entryCount;
-    _waiters.insert(self);
+    ++entry_count_;
+    waiters_.insert(self);
 
     m.Acquire();
 
@@ -156,16 +155,16 @@ void SemaphoreImpl<List>::acquire() {
     // previous operation and will leave the wait() w/o release() having
     // been called.
     typename List::iterator i =
-        std::find(_waiters.begin(), _waiters.end(), self);
-    if (i != _waiters.end()) _waiters.erase(i);
+        std::find(waiters_.begin(), waiters_.end(), self);
+    if (i != waiters_.end()) waiters_.erase(i);
 
-    --_entryCount;
+    --entry_count_;
 
     switch (state) {
       // If awoke due to a notify(), update the count
       case Monitor::SIGNALED:
 
-        _count--;
+        count_--;
         break;
 
       case Monitor::INTERRUPTED:
@@ -186,20 +185,20 @@ void SemaphoreImpl<List>::acquire() {
  * @exception Synchronization_Exception thrown if there is some other error.
  */
 template <typename List>
-bool SemaphoreImpl<List>::tryAcquire(unsigned long timeout) {
+bool SemaphoreImpl<List>::TryAcquire(unsigned long timeout) {
   // Get the monitor for the current thread
   ThreadImpl* self = ThreadImpl::current();
   Monitor& m = self->getMonitor();
 
-  Guard<FastLock> g1(_lock);
+  Guard<FastLock> g1(lock_);
 
   // Update the count without waiting if possible.
-  if (_count > 0 && _entryCount == 0) _count--;
+  if (count_ > 0 && entry_count_ == 0) count_--;
 
   // Otherwise, wait() for the lock by placing the waiter in the list
   else {
-    ++_entryCount;
-    _waiters.push_back(self);
+    ++entry_count_;
+    waiters_.push_back(self);
 
     Monitor::STATE state = Monitor::TIMEDOUT;
 
@@ -220,16 +219,16 @@ bool SemaphoreImpl<List>::tryAcquire(unsigned long timeout) {
     // previous operation and will leave the wait() w/o release() having
     // been called.
     typename List::iterator i =
-        std::find(_waiters.begin(), _waiters.end(), self);
-    if (i != _waiters.end()) _waiters.erase(i);
+        std::find(waiters_.begin(), waiters_.end(), self);
+    if (i != waiters_.end()) waiters_.erase(i);
 
-    --_entryCount;
+    --entry_count_;
 
     switch (state) {
       // If awoke due to a notify(), update the count
       case Monitor::SIGNALED:
 
-        _count--;
+        count_--;
         break;
 
       case Monitor::INTERRUPTED:
@@ -255,19 +254,19 @@ bool SemaphoreImpl<List>::tryAcquire(unsigned long timeout) {
  * the checked flag is set.
  */
 template <typename List>
-void SemaphoreImpl<List>::release() {
-  Guard<FastLock> g1(_lock);
+void SemaphoreImpl<List>::Release() {
+  Guard<FastLock> g1(lock_);
 
   // Make sure the operation is valid
-  if (_checked && _count == _maxCount) throw InvalidOp_Exception();
+  if (checked_ && count_ == max_count_) throw InvalidOp_Exception();
 
   // Increment the count
-  _count++;
+  count_++;
 
   // Try to find a waiter with a backoff & retry scheme
   for (;;) {
     // Go through the list, attempt to notify() a waiter.
-    for (typename List::iterator i = _waiters.begin(); i != _waiters.end();) {
+    for (typename List::iterator i = waiters_.begin(); i != waiters_.end();) {
       // Try the monitor lock, if it cant be locked skip to the next waiter
       ThreadImpl* impl = *i;
       Monitor& m = impl->getMonitor();
@@ -275,7 +274,7 @@ void SemaphoreImpl<List>::release() {
       if (m.TryAcquire()) {
         // Notify the monitor & remove from the waiter list so time isn't
         // wasted checking it again.
-        i = _waiters.erase(i);
+        i = waiters_.erase(i);
 
         // If notify() is not sucessful, it is because the wait() has already
         // been ended (killed/interrupted/notify'd)
@@ -290,7 +289,7 @@ void SemaphoreImpl<List>::release() {
         ++i;
     }
 
-    if (_waiters.empty()) return;
+    if (waiters_.empty()) return;
 
     {  // Backoff and try again
 
@@ -302,9 +301,9 @@ void SemaphoreImpl<List>::release() {
 
 class FifoSemaphoreImpl : public SemaphoreImpl<fifo_list> {
  public:
-  FifoSemaphoreImpl(int count, unsigned int maxCount, bool checked)
+  FifoSemaphoreImpl(int count, unsigned int max_count, bool checked)
       /* throw(Synchronization_Exception) */
-      : SemaphoreImpl<fifo_list>(count, maxCount, checked) {}
+      : SemaphoreImpl<fifo_list>(count, max_count, checked) {}
 };
 
 }  // namespace ZThread

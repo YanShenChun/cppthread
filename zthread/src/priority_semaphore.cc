@@ -50,26 +50,26 @@ PrioritySemaphore::~PrioritySemaphore() {
   if (_impl != 0) delete _impl;
 }
 
-void PrioritySemaphore::wait() { _impl->acquire(); }
+void PrioritySemaphore::wait() { _impl->Acquire(); }
 
 bool PrioritySemaphore::tryWait(unsigned long ms) {
-  return _impl->tryAcquire(ms);
+  return _impl->TryAcquire(ms);
 }
 
-void PrioritySemaphore::post() { _impl->release(); }
+void PrioritySemaphore::post() { _impl->Release(); }
 
-int PrioritySemaphore::count() { return _impl->count(); }
+int PrioritySemaphore::count() { return _impl->Count(); }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Locakable compatibility
 //
 
-void PrioritySemaphore::acquire() { _impl->acquire(); }
+void PrioritySemaphore::acquire() { _impl->Acquire(); }
 
 bool PrioritySemaphore::tryAcquire(unsigned long ms) {
-  return _impl->tryAcquire(ms);
+  return _impl->TryAcquire(ms);
 }
 
-void PrioritySemaphore::release() { _impl->release(); }
+void PrioritySemaphore::release() { _impl->Release(); }
 
 }  // namespace ZThread

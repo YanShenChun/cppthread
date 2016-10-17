@@ -43,22 +43,22 @@ Semaphore::~Semaphore() {
   if (_impl != 0) delete _impl;
 }
 
-void Semaphore::wait() { _impl->acquire(); }
+void Semaphore::wait() { _impl->Acquire(); }
 
-bool Semaphore::tryWait(unsigned long ms) { return _impl->tryAcquire(ms); }
+bool Semaphore::tryWait(unsigned long ms) { return _impl->TryAcquire(ms); }
 
-void Semaphore::post() { _impl->release(); }
+void Semaphore::post() { _impl->Release(); }
 
-int Semaphore::count() { return _impl->count(); }
+int Semaphore::count() { return _impl->Count(); }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Locakable compatibility
 //
 
-void Semaphore::acquire() { _impl->acquire(); }
+void Semaphore::acquire() { _impl->Acquire(); }
 
-bool Semaphore::tryAcquire(unsigned long ms) { return _impl->tryAcquire(ms); }
+bool Semaphore::tryAcquire(unsigned long ms) { return _impl->TryAcquire(ms); }
 
-void Semaphore::release() { _impl->release(); }
+void Semaphore::release() { _impl->Release(); }
 
 }  // namespace ZThread
