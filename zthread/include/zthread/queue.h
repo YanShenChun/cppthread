@@ -162,7 +162,7 @@ class Queue : public Cancelable, private NonCopyable {
     try {
       return Size() == 0;
 
-    } catch (Cancellation_Exception&) {
+    } catch (CancellationException&) {
     }
 
     return true;
@@ -185,7 +185,7 @@ class Queue : public Cancelable, private NonCopyable {
     try {
       return Size(timeout) == 0;
 
-    } catch (Cancellation_Exception&) {
+    } catch (CancellationException&) {
     }
 
     return true;

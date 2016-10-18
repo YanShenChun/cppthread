@@ -168,10 +168,10 @@ void SemaphoreImpl<List>::Acquire() {
         break;
 
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
 
       default:
-        throw Synchronization_Exception();
+        throw SynchronizationException();
     }
   }
 }
@@ -232,13 +232,13 @@ bool SemaphoreImpl<List>::TryAcquire(unsigned long timeout) {
         break;
 
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
 
       case Monitor::TIMEDOUT:
         return false;
 
       default:
-        throw Synchronization_Exception();
+        throw SynchronizationException();
     }
   }
 
@@ -258,7 +258,7 @@ void SemaphoreImpl<List>::Release() {
   Guard<FastLock> g1(lock_);
 
   // Make sure the operation is valid
-  if (checked_ && count_ == max_count_) throw InvalidOp_Exception();
+  if (checked_ && count_ == max_count_) throw InvalidOpException();
 
   // Increment the count
   count_++;

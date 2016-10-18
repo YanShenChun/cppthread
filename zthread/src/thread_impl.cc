@@ -102,11 +102,11 @@ bool ThreadImpl::join(unsigned long timeout) {
   Guard<Monitor> g1(_monitor);
 
   // Make sure a thread is not trying to join() itself.
-  if (ThreadOps::isCurrent(this)) throw Deadlock_Exception("Cannot join self.");
+  if (ThreadOps::isCurrent(this)) throw DeadlockException("Cannot join self.");
 
   // Reference threads can't be joined.
   if (_state.isReference())
-    throw InvalidOp_Exception("Can not join this thread.");
+    throw InvalidOpException("Can not join this thread.");
 
   /*
 
@@ -141,7 +141,7 @@ bool ThreadImpl::join(unsigned long timeout) {
         return false;
 
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
 
       default:
         break;
@@ -242,7 +242,7 @@ void ThreadImpl::sleep(unsigned long ms) {
   for (;;) {
     switch (monitor.wait(ms)) {
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
 
       default:
         return;
@@ -274,7 +274,7 @@ void ThreadImpl::start(const Task& task) {
   Guard<Monitor> g1(_monitor);
 
   // A Thread must be idle in order to be eligable to run a task.
-  if (!_state.isIdle()) throw InvalidOp_Exception("Thread is not idle.");
+  if (!_state.isIdle()) throw InvalidOpException("Thread is not idle.");
 
   _state.setRunning();
 
@@ -290,7 +290,7 @@ void ThreadImpl::start(const Task& task) {
   if (!spawn(&launch)) {
     // Return to the idle state & report the error if it doesn't work out.
     _state.setIdle();
-    throw Synchronization_Exception();
+    throw SynchronizationException();
   }
 
   // Wait, uninterruptably, for the child's signal. The parent thread

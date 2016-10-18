@@ -128,9 +128,9 @@ class WaiterQueue {
       case Monitor::TIMEDOUT:
         return false;
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
       default:
-        throw Synchronization_Exception();
+        throw SynchronizationException();
     }
 
     return true;

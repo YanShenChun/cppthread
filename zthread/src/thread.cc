@@ -62,7 +62,7 @@ Priority Thread::getPriority() { return _impl->getPriority(); }
 bool Thread::interrupt() { return _impl->interrupt(); }
 
 void Thread::Cancel() {
-  if (ThreadImpl::current() == _impl) throw InvalidOp_Exception();
+  if (ThreadImpl::current() == _impl) throw InvalidOpException();
 
   _impl->cancel();
 }

@@ -135,9 +135,9 @@ class WaiterQueue {
       case Monitor::TIMEDOUT:
         return false;
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
       default:
-        throw Synchronization_Exception();
+        throw SynchronizationException();
     }
 
     return true;
@@ -406,7 +406,7 @@ class ExecutorImpl {
         task = _taskQueue.Next();
         break;
 
-      } catch (Interrupted_Exception&) {
+      } catch (InterruptedException&) {
         // Ignore interruption here, it can only come from
         // another thread interrupt()ing the executor. The
         // thread was interrupted in the hopes it was busy
@@ -495,7 +495,7 @@ PoolExecutor::~PoolExecutor() {
 void PoolExecutor::Interrupt() { _impl->interrupt(); }
 
 void PoolExecutor::size(size_t n) {
-  if (n < 1) throw InvalidOp_Exception();
+  if (n < 1) throw InvalidOpException();
 
   for (size_t m = _impl->workers(n); m > 0; --m) Thread t(new Worker(_impl));
 }

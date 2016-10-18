@@ -239,12 +239,12 @@ class TimedLockedScope {
    */
   template <class LockType1, class LockType2>
   static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-    if (!l2.getLock().tryAcquire(TimeOut)) throw Timeout_Exception();
+    if (!l2.getLock().tryAcquire(TimeOut)) throw TimeoutException();
   }
 
   template <class LockType>
   static void createScope(LockHolder<LockType>& l) {
-    if (!l.getLock().tryAcquire(TimeOut)) throw Timeout_Exception();
+    if (!l.getLock().tryAcquire(TimeOut)) throw TimeoutException();
   }
 
   template <class LockType>
@@ -355,7 +355,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    * @post the protection scope may be ended prematurely
    */
   Guard(LockType& lock, unsigned long timeout) : LockHolder<LockType>(lock) {
-    if (!LockingPolicy::createScope(*this, timeout)) throw Timeout_Exception();
+    if (!LockingPolicy::createScope(*this, timeout)) throw TimeoutException();
   };
 
   /**

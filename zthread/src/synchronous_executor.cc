@@ -47,19 +47,19 @@ void SynchronousExecutor::interrupt() {}
 void SynchronousExecutor::execute(const Task& task) {
   // Canceled Executors will not accept new tasks, quick
   // check to avoid excessive locking in the canceled state
-  if (_canceled) throw Cancellation_Exception();
+  if (_canceled) throw CancellationException();
 
   Guard<Mutex> g(_lock);
 
   if (_canceled)  // Double check
-    throw Cancellation_Exception();
+    throw CancellationException();
 
   // Run the task.
   Task(task)->run();
 }
 
 void SynchronousExecutor::wait() {
-  if (Thread::interrupted()) throw Interrupted_Exception();
+  if (Thread::interrupted()) throw InterruptedException();
 
   Guard<Mutex> g(_lock);
 }
@@ -68,7 +68,7 @@ void SynchronousExecutor::wait() {
  * @see Executor::wait(unsigned long)
  */
 bool SynchronousExecutor::wait(unsigned long) {
-  if (Thread::interrupted()) throw Interrupted_Exception();
+  if (Thread::interrupted()) throw InterruptedException();
 
   Guard<Mutex> g(_lock);
   return true;

@@ -136,7 +136,7 @@ void MutexImpl<List, Behavior>::acquire() {
 
   // Deadlock will occur if the current thread is the owner
   // and there is no entry count.
-  if (_owner == self) throw Deadlock_Exception();
+  if (_owner == self) throw DeadlockException();
 
   // Acquire the lock if it is free and there are no waiting threads
   if (_owner == 0 && _waiters.empty()) {
@@ -183,10 +183,10 @@ void MutexImpl<List, Behavior>::acquire() {
         break;
 
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
 
       default:
-        throw Synchronization_Exception();
+        throw SynchronizationException();
     }
   }
 }
@@ -211,7 +211,7 @@ bool MutexImpl<List, Behavior>::tryAcquire(unsigned long timeout) {
 
   // Deadlock will occur if the current thread is the owner
   // and there is no entry count.
-  if (_owner == self) throw Deadlock_Exception();
+  if (_owner == self) throw DeadlockException();
 
   // Acquire the lock if it is free and there are no waiting threads
   if (_owner == 0 && _waiters.empty()) {
@@ -264,13 +264,13 @@ bool MutexImpl<List, Behavior>::tryAcquire(unsigned long timeout) {
         break;
 
       case Monitor::INTERRUPTED:
-        throw Interrupted_Exception();
+        throw InterruptedException();
 
       case Monitor::TIMEDOUT:
         return false;
 
       default:
-        throw Synchronization_Exception();
+        throw SynchronizationException();
     }
   }
 
@@ -293,7 +293,7 @@ void MutexImpl<List, Behavior>::release() {
   Guard<FastLock> g1(_lock);
 
   // Make sure the operation is valid
-  if (_owner != impl) throw InvalidOp_Exception();
+  if (_owner != impl) throw InvalidOpException();
 
   _owner = 0;
 

@@ -72,7 +72,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
   virtual void Add(const T& item) {
     Guard<LockType> g(lock_);
 
-    if (canceled_) throw Cancellation_Exception();
+    if (canceled_) throw CancellationException();
 
     queue_.push_back(item);
 
@@ -86,12 +86,12 @@ class BlockingQueue : public Queue<T>, public Lockable {
     try {
       Guard<LockType> g(lock_, timeout);
 
-      if (canceled_) throw Cancellation_Exception();
+      if (canceled_) throw CancellationException();
 
       queue_.push_back(item);
 
       not_empty_.Signal();
-    } catch (Timeout_Exception&) {
+    } catch (TimeoutException&) {
       return false;
     }
 
@@ -119,7 +119,7 @@ class BlockingQueue : public Queue<T>, public Lockable {
 
     while (queue_.size() == 0 && !canceled_) not_empty_.Wait();
 
-    if (queue_.size() == 0) throw Cancellation_Exception();
+    if (queue_.size() == 0) throw CancellationException();
 
     T item = queue_.front();
     queue_.pop_front();
@@ -153,10 +153,10 @@ class BlockingQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(lock_, timeout);
 
     while (queue_.size() == 0 && !canceled_) {
-      if (!not_empty_.Wait(timeout)) throw Timeout_Exception();
+      if (!not_empty_.Wait(timeout)) throw TimeoutException();
     }
 
-    if (queue_.size() == 0) throw Cancellation_Exception();
+    if (queue_.size() == 0) throw CancellationException();
 
     T item = queue_.front();
     queue_.pop_front();

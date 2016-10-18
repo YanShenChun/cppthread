@@ -98,7 +98,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock);
 
     // Allow no further additions in the canceled state
-    if (_canceled) throw Cancellation_Exception();
+    if (_canceled) throw CancellationException();
 
     _queue.push_back(item);
 
@@ -134,13 +134,13 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     try {
       Guard<LockType> g(_lock, timeout);
 
-      if (_canceled) throw Cancellation_Exception();
+      if (_canceled) throw CancellationException();
 
       _queue.push_back(item);
 
       _notEmpty.Signal();
 
-    } catch (Timeout_Exception&) {
+    } catch (TimeoutException&) {
       return false;
     }
 
@@ -171,7 +171,7 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     while (_queue.size() == 0 && !_canceled) _notEmpty.Wait();
 
     if (_queue.size() == 0)  // Queue canceled
-      throw Cancellation_Exception();
+      throw CancellationException();
 
     T item = _queue.front();
     _queue.pop_front();
@@ -206,11 +206,11 @@ class MonitoredQueue : public Queue<T>, public Lockable {
     Guard<LockType> g(_lock, timeout);
 
     while (_queue.size() == 0 && !_canceled) {
-      if (!_notEmpty.Wait(timeout)) throw Timeout_Exception();
+      if (!_notEmpty.Wait(timeout)) throw TimeoutException();
     }
 
     if (_queue.size() == 0)  // Queue canceled
-      throw Cancellation_Exception();
+      throw CancellationException();
 
     T item = _queue.front();
     _queue.pop_front();

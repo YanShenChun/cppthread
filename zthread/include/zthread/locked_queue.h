@@ -67,7 +67,7 @@ class LockedQueue : public Queue<T> {
   virtual void add(const T& item) {
     Guard<LockType> g(_lock);
 
-    if (_canceled) throw Cancellation_Exception();
+    if (_canceled) throw CancellationException();
 
     _queue.push_back(item);
   }
@@ -79,11 +79,11 @@ class LockedQueue : public Queue<T> {
     try {
       Guard<LockType> g(_lock, timeout);
 
-      if (_canceled) throw Cancellation_Exception();
+      if (_canceled) throw CancellationException();
 
       _queue.push_back(item);
 
-    } catch (Timeout_Exception&) {
+    } catch (TimeoutException&) {
       return false;
     }
 
@@ -96,9 +96,9 @@ class LockedQueue : public Queue<T> {
   virtual T next() {
     Guard<LockType> g(_lock);
 
-    if (_queue.size() == 0 && _canceled) throw Cancellation_Exception();
+    if (_queue.size() == 0 && _canceled) throw CancellationException();
 
-    if (_queue.size() == 0) throw NoSuchElement_Exception();
+    if (_queue.size() == 0) throw NoSuchElementException();
 
     T item = _queue.front();
     _queue.pop_front();
@@ -112,9 +112,9 @@ class LockedQueue : public Queue<T> {
   virtual T next(unsigned long timeout) {
     Guard<LockType> g(_lock, timeout);
 
-    if (_queue.size() == 0 && _canceled) throw Cancellation_Exception();
+    if (_queue.size() == 0 && _canceled) throw CancellationException();
 
-    if (_queue.size() == 0) throw NoSuchElement_Exception();
+    if (_queue.size() == 0) throw NoSuchElementException();
 
     T item = _queue.front();
     _queue.pop_front();

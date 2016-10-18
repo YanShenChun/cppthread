@@ -128,7 +128,7 @@ class Barrier : public Waitable, private NonCopyable {
   virtual void Wait() {
     Guard<LockType> g(lock_);
 
-    if (broken_) throw BrokenBarrier_Exception();
+    if (broken_) throw BrokenBarrierException();
 
     // Break the barrier if an arriving thread is interrupted
     if (Thread::interrupted()) {
@@ -136,7 +136,7 @@ class Barrier : public Waitable, private NonCopyable {
       arrived_.Broadcast();
       broken_ = true;
 
-      throw Interrupted_Exception();
+      throw InterruptedException();
     }
 
     if (--count_ == 0) {
@@ -149,7 +149,7 @@ class Barrier : public Waitable, private NonCopyable {
       try {
         if (task_) task_->run();
         generation_++;
-      } catch (Synchronization_Exception&) {
+      } catch (SynchronizationException&) {
         broken_ = true;
         throw;
       } catch (...) {
@@ -161,7 +161,7 @@ class Barrier : public Waitable, private NonCopyable {
       try {
         // Wait for the other threads to arrive
         arrived_.Wait();
-      } catch (Interrupted_Exception&) {
+      } catch (InterruptedException&) {
         // Its possible for a thread to be interrupted before the
         // last thread arrives. If the interrupted thread hasn't
         // resumed, then just propagate the interruption
@@ -169,7 +169,7 @@ class Barrier : public Waitable, private NonCopyable {
           Thread().interrupt();
         else
           broken_ = true;
-      } catch (Synchronization_Exception&) {
+      } catch (SynchronizationException&) {
         // Break the barrier and propagate the exception
         broken_ = true;
         throw;
@@ -177,7 +177,7 @@ class Barrier : public Waitable, private NonCopyable {
 
       // If the thread woke because it was notified by the thread
       // that broke the barrier, throw.
-      if (broken_) throw BrokenBarrier_Exception();
+      if (broken_) throw BrokenBarrierException();
     }
   }
 
@@ -208,7 +208,7 @@ class Barrier : public Waitable, private NonCopyable {
   virtual bool Wait(unsigned long timeout) {
     Guard<LockType> g(lock_);
 
-    if (broken_) throw BrokenBarrier_Exception();
+    if (broken_) throw BrokenBarrierException();
 
     // Break the barrier if an arriving thread is interrupted
     if (Thread::interrupted()) {
@@ -216,7 +216,7 @@ class Barrier : public Waitable, private NonCopyable {
       arrived_.Broadcast();
       broken_ = true;
 
-      throw Interrupted_Exception();
+      throw InterruptedException();
     }
 
     if (--count_ == 0) {
@@ -229,7 +229,7 @@ class Barrier : public Waitable, private NonCopyable {
       try {
         if (task_) task_->run();
         generation_++;
-      } catch (Synchronization_Exception&) {
+      } catch (SynchronizationException&) {
         broken_ = true;
         throw;
       } catch (...) {
@@ -241,7 +241,7 @@ class Barrier : public Waitable, private NonCopyable {
       try {
         // Wait for the other threads to arrive
         if (!arrived_.Wait(timeout)) broken_ = true;
-      } catch (Interrupted_Exception&) {
+      } catch (InterruptedException&) {
         // Its possible for a thread to be interrupted before the
         // last thread arrives. If the interrupted thread hasn't
         // resumed, then just propagate the interruption
@@ -250,7 +250,7 @@ class Barrier : public Waitable, private NonCopyable {
           Thread().interrupt();
         else
           broken_ = true;
-      } catch (Synchronization_Exception&) {
+      } catch (SynchronizationException&) {
         // Break the barrier and propagate the exception
         broken_ = true;
         throw;
@@ -258,7 +258,7 @@ class Barrier : public Waitable, private NonCopyable {
 
       // If the thread woke because it was notified by the thread
       // that broke the barrier, throw.
-      if (broken_) throw BrokenBarrier_Exception();
+      if (broken_) throw BrokenBarrierException();
     }
 
     return true;

@@ -71,7 +71,7 @@ class TSS {
    * initialized
    */
   inline T get() const {
-    if (!_valid) throw InvalidOp_Exception();
+    if (!_valid) throw InvalidOpException();
 
     return static_cast<T>(::TlsGetValue(_key));
   }

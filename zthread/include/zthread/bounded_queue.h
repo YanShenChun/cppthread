@@ -129,7 +129,7 @@ class BoundedQueue : public Queue<T>, public Lockable {
     // Wait for the capacity of the Queue to drop
     while ((queue_.size() == capacity_) && !canceled_) not_full_.Wait();
 
-    if (canceled_) throw Cancellation_Exception();
+    if (canceled_) throw CancellationException();
 
     queue_.push_back(item);
     not_empty_.Signal();  // Wake any waiters
@@ -170,11 +170,11 @@ class BoundedQueue : public Queue<T>, public Lockable {
       while ((queue_.size() == capacity_) && !canceled_)
         if (!not_full_.Wait(timeout)) return false;
 
-      if (canceled_) throw Cancellation_Exception();
+      if (canceled_) throw CancellationException();
 
       queue_.push_back(item);
       not_empty_.Signal();  // Wake any waiters
-    } catch (Timeout_Exception&) {
+    } catch (TimeoutException&) {
       return false;
     }
 
@@ -203,7 +203,7 @@ class BoundedQueue : public Queue<T>, public Lockable {
     while (queue_.size() == 0 && !canceled_) not_empty_.Wait();
 
     if (queue_.size() == 0)  // Queue canceled
-      throw Cancellation_Exception();
+      throw CancellationException();
 
     T item = queue_.front();
     queue_.pop_front();
@@ -240,11 +240,11 @@ class BoundedQueue : public Queue<T>, public Lockable {
 
     // Wait for items to be added
     while (queue_.size() == 0 && !canceled_) {
-      if (!not_empty_.Wait(timeout)) throw Timeout_Exception();
+      if (!not_empty_.Wait(timeout)) throw TimeoutException();
     }
 
     if (queue_.size() == 0)  // Queue canceled
-      throw Cancellation_Exception();
+      throw CancellationException();
 
     T item = queue_.front();
     queue_.pop_front();

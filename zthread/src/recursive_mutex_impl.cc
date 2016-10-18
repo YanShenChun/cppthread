@@ -119,10 +119,10 @@ void RecursiveMutexImpl::acquire() {
           break;
 
         case Monitor::INTERRUPTED:
-          throw Interrupted_Exception();
+          throw InterruptedException();
 
         default:
-          throw Synchronization_Exception();
+          throw SynchronizationException();
       }
     }
   }
@@ -185,13 +185,13 @@ bool RecursiveMutexImpl::tryAcquire(unsigned long timeout) {
           break;
 
         case Monitor::INTERRUPTED:
-          throw Interrupted_Exception();
+          throw InterruptedException();
 
         case Monitor::TIMEDOUT:
           return false;
 
         default:
-          throw Synchronization_Exception();
+          throw SynchronizationException();
       }
     }
   }
@@ -206,7 +206,7 @@ void RecursiveMutexImpl::release() {
   Guard<FastLock> g1(_lock);
 
   // Make sure the operation is valid
-  if (!(_owner == &m)) throw InvalidOp_Exception();
+  if (!(_owner == &m)) throw InvalidOpException();
 
   // Update the count, if it has reached 0, wake another waiter.
   if (--_count == 0) {

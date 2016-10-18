@@ -33,178 +33,178 @@
 namespace zthread {
 
 /**
- * @class Synchronization_Exception
+ * @class SynchronizationException
  *
  * Serves as a general base class for the Exception hierarchy used within
  * this package.
  *
  */
-class Synchronization_Exception {
+class SynchronizationException {
   // Restrict heap allocation
   static void* operator new(size_t size);
   static void* operator new[](size_t size);
 
-  std::string _msg;
+  std::string msg_;
 
  public:
   /**
    * Create a new exception with a default error message 'Synchronization
    * Exception'
    */
-  Synchronization_Exception() : _msg("Synchronization exception") {}
+  SynchronizationException() : msg_("Synchronization exception") {}
 
   /**
    * Create a new exception with a given error message
    *
    * @param const char* - error message
    */
-  Synchronization_Exception(const char* msg) : _msg(msg) {}
+  SynchronizationException(const char* msg) : msg_(msg) {}
 
   /**
    * Get additional info about the exception
    *
    * @return const char* for the error message
    */
-  const char* what() const { return _msg.c_str(); }
+  const char* what() const { return msg_.c_str(); }
 };
 
 /**
- * @class Interrupted_Exception
+ * @class InterruptedException
  *
  * Used to describe an interrupted operation that would have normally
  * blocked the calling thread
  */
-class Interrupted_Exception : public Synchronization_Exception {
+class InterruptedException : public SynchronizationException {
  public:
   //! Create a new exception
-  Interrupted_Exception() : Synchronization_Exception("Thread interrupted") {}
+  InterruptedException() : SynchronizationException("Thread interrupted") {}
 
   //! Create a new exception
-  Interrupted_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  InterruptedException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class Deadlock_Exception
+ * @class DeadlockException
  *
  * Thrown when deadlock has been detected
  */
-class Deadlock_Exception : public Synchronization_Exception {
+class DeadlockException : public SynchronizationException {
  public:
   //! Create a new exception
-  Deadlock_Exception() : Synchronization_Exception("Deadlock detected") {}
+  DeadlockException() : SynchronizationException("Deadlock detected") {}
 
   //! Create a new exception
-  Deadlock_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  DeadlockException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class InvalidOp_Exception
+ * @class InvalidOpException
  *
  * Thrown when performing an illegal operation this object
  */
-class InvalidOp_Exception : public Synchronization_Exception {
+class InvalidOpException : public SynchronizationException {
  public:
   //! Create a new exception
-  InvalidOp_Exception() : Synchronization_Exception("Invalid operation") {}
+  InvalidOpException() : SynchronizationException("Invalid operation") {}
   //! Create a new exception
-  InvalidOp_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  InvalidOpException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class Initialization_Exception
+ * @class InitializationException
  *
  * Thrown when the system has no more resources to create new
  * synchronization controls
  */
-class Initialization_Exception : public Synchronization_Exception {
+class InitializationException : public SynchronizationException {
  public:
   //! Create a new exception
-  Initialization_Exception()
-      : Synchronization_Exception("Initialization error") {}
+  InitializationException()
+      : SynchronizationException("Initialization error") {}
   //! Create a new exception
-  Initialization_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  InitializationException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class Cancellation_Exception
+ * @class CancellationException
  *
  * Cancellation_Exceptions are thrown by 'Canceled' objects.
  * @see Cancelable
  */
-class Cancellation_Exception : public Synchronization_Exception {
+class CancellationException : public SynchronizationException {
  public:
   //! Create a new Cancelltion_Exception
-  Cancellation_Exception() : Synchronization_Exception("Canceled") {}
+  CancellationException() : SynchronizationException("Canceled") {}
   //! Create a new Cancelltion_Exception
-  Cancellation_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  CancellationException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class Timeout_Exception
+ * @class TimeoutException
  *
  * There is no need for error messaged simply indicates the last
  * operation timed out
  */
-class Timeout_Exception : public Synchronization_Exception {
+class TimeoutException : public SynchronizationException {
  public:
   //! Create a new Timeout_Exception
-  Timeout_Exception() : Synchronization_Exception("Timeout") {}
+  TimeoutException() : SynchronizationException("Timeout") {}
   //! Create a new
-  Timeout_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  TimeoutException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class NoSuchElement_Exception
+ * @class NoSuchElementException
  *
  * The last operation that was attempted on a Queue could not find
  * the item that was indicated (during that last Queue method invocation)
  */
-class NoSuchElement_Exception {
+class NoSuchElementException {
  public:
   //! Create a new exception
-  NoSuchElement_Exception() {}
+  NoSuchElementException() {}
 };
 
 /**
- * @class InvalidTask_Exception
+ * @class InvalidTaskException
  *
  * Thrown when a task is not valid (e.g. null or start()ing a thread with
  * no overriden run() method)
  */
-class InvalidTask_Exception : public InvalidOp_Exception {
+class InvalidTaskException : public InvalidOpException {
  public:
   //! Create a new exception
-  InvalidTask_Exception() : InvalidOp_Exception("Invalid task") {}
+  InvalidTaskException() : InvalidOpException("Invalid task") {}
 };
 
 /**
- * @class BrokenBarrier_Exception
+ * @class BrokenBarrierException
  *
  * Thrown when a Barrier is broken because one of the participating threads
  * has been interrupted.
  */
-class BrokenBarrier_Exception : public Synchronization_Exception {
+class BrokenBarrierException : public SynchronizationException {
  public:
   //! Create a new exception
-  BrokenBarrier_Exception() : Synchronization_Exception("Barrier broken") {}
+  BrokenBarrierException() : SynchronizationException("Barrier broken") {}
 
   //! Create a new exception
-  BrokenBarrier_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  BrokenBarrierException(const char* msg) : SynchronizationException(msg) {}
 };
 
 /**
- * @class Future_Exception
+ * @class FutureException
  *
  * Thrown when there is an error using a Future.
  */
-class Future_Exception : public Synchronization_Exception {
+class FutureException : public SynchronizationException {
  public:
   //! Create a new exception
-  Future_Exception() : Synchronization_Exception() {}
+  FutureException() : SynchronizationException() {}
 
   //! Create a new exception
-  Future_Exception(const char* msg) : Synchronization_Exception(msg) {}
+  FutureException(const char* msg) : SynchronizationException(msg) {}
 };
-};
+}; // namespace zthread
 
 #endif  // __ZTEXCEPTIONS_H__
