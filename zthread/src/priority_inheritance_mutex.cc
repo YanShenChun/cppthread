@@ -69,7 +69,7 @@ PriorityInheritanceMutex::~PriorityInheritanceMutex() {
 }
 
 // P
-void PriorityInheritanceMutex::acquire() { _impl->acquire(); }
+void PriorityInheritanceMutex::Acquire() { _impl->Acquire(); }
 
 // P
 bool PriorityInheritanceMutex::tryAcquire(unsigned long ms) {

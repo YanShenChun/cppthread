@@ -55,7 +55,7 @@ int Semaphore::count() { return _impl->Count(); }
 // Locakable compatibility
 //
 
-void Semaphore::acquire() { _impl->Acquire(); }
+void Semaphore::Acquire() { _impl->Acquire(); }
 
 bool Semaphore::tryAcquire(unsigned long ms) { return _impl->TryAcquire(ms); }
 

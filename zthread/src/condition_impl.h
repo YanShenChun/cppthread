@@ -225,7 +225,7 @@ void ConditionImpl<List>::wait() {
     if (i != _waiters.end()) _waiters.erase(i);
   }
 
-  // Defer interruption until the external lock is acquire()d
+  // Defer interruption until the external lock is Acquire()d
   Guard<Monitor, DeferredInterruptionScope> g3(m);
   {
 #if !defined(NDEBUG)
@@ -303,7 +303,7 @@ bool ConditionImpl<List>::wait(unsigned long timeout) {
     if (i != _waiters.end()) _waiters.erase(i);
   }
 
-  // Defer interruption until the external lock is acquire()d
+  // Defer interruption until the external lock is Acquire()d
   Guard<Monitor, DeferredInterruptionScope> g3(m);
   {
 #if !defined(NDEBUG)

@@ -66,7 +66,7 @@ RecursiveMutexImpl::~RecursiveMutexImpl() {
 #endif
 }
 
-void RecursiveMutexImpl::acquire() {
+void RecursiveMutexImpl::Acquire() {
   // Get the monitor for the current thread
   Monitor& m = ThreadImpl::current()->getMonitor();
   Monitor::STATE state;

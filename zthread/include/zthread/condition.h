@@ -57,13 +57,13 @@ class FifoConditionImpl;
  * @see Thread::interupt()
  *
  * Before a wait() is performed on a Condition, the associated Lockable object
- * should  have been acquire()ed. When the wait() begins, that Lockable object
+ * should  have been Acquire()ed. When the wait() begins, that Lockable object
  * is release()d
  * (wait() will atomically begin the wait and unlock the Lockable).
  *
  * A thread blocked by wait() will remain so until an exception occurs, or until
  * the thread awakened by a signal() or broadcast(). When the thread resumes
- * execution,  the associated Lockable is acquire()d before wait() returns.
+ * execution,  the associated Lockable is Acquire()d before wait() returns.
  *
  * <b>Scheduling</b>
  *
@@ -118,7 +118,7 @@ class ZTHREAD_API Condition : public Waitable, private NonCopyable {
    *      Lockable object.
    *
    * @post A thread that has resumed execution without exception (because of a
-   * signal(), broadcast() or exception) will have acquire()d the associated
+   * signal(), broadcast() or exception) will have Acquire()d the associated
    * Lockable object before returning from a wait().
    *
    * @see Waitable::wait()
@@ -148,7 +148,7 @@ class ZTHREAD_API Condition : public Waitable, private NonCopyable {
    *      Lockable object.
    *
    * @post A thread that has resumed execution without exception (because of a
-   * signal(), broadcast() or exception) will have acquire()d the associated
+   * signal(), broadcast() or exception) will have Acquire()d the associated
    * Lockable object before returning from a wait().
    *
    * @see Waitable::wait(unsigned long timeout)

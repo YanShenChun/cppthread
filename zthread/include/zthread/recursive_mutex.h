@@ -42,7 +42,7 @@ class RecursiveMutexImpl;
  * @version 2.2.1
  *
  * A RecursiveMutex is a recursive, MUTual EXclusion Lockable object. It is
- * recursive because it can be acquire()d and release()d more than once
+ * recursive because it can be Acquire()d and release()d more than once
  * by the same thread, instead of causing a Deadlock_Exception.
  *
  * @see Mutex
@@ -50,7 +50,7 @@ class RecursiveMutexImpl;
  *
  * <b>Scheduling</b>
  *
- * Threads competing to acquire() a Mutex are granted access in FIFO order.
+ * Threads competing to Acquire() a Mutex are granted access in FIFO order.
  *
  * <b>Error Checking</b>
  *
@@ -85,9 +85,9 @@ class ZTHREAD_API RecursiveMutex : public Lockable, private NonCopyable {
    * exception
    *       was thrown.
    *
-   * @see Lockable::acquire()
+   * @see Lockable::Acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * Acquire a RecursiveMutex, possibly blocking until the the current owner
@@ -119,7 +119,7 @@ class ZTHREAD_API RecursiveMutex : public Lockable, private NonCopyable {
   /**
    * Release exclusive access. No safety or state checks are performed.
    *
-   * @pre This should not be called more times than the acquire() method was
+   * @pre This should not be called more times than the Acquire() method was
    *      called.
    *
    * @see Lockable::release()

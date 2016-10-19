@@ -35,7 +35,7 @@ RecursiveMutex::~RecursiveMutex() {
   if (_impl != (RecursiveMutexImpl*)0) delete _impl;
 }
 
-void RecursiveMutex::acquire() { _impl->acquire(); }
+void RecursiveMutex::Acquire() { _impl->Acquire(); }
 
 bool RecursiveMutex::tryAcquire(unsigned long ms) {
   return _impl->tryAcquire(ms);

@@ -35,9 +35,9 @@ namespace zthread {
 //
 // GuardLockingPolicyContract {
 //
-// createScope(lock_type&)
-// bool createScope(lock_type&, unsigned long)
-// destroyScope(lock_type&)
+// CreateScope(lock_type&)
+// bool CreateScope(lock_type&, unsigned long)
+// DestroyScope(lock_type&)
 //
 // }
 //
@@ -55,22 +55,22 @@ namespace zthread {
  */
 template <class LockType>
 class LockHolder {
-  LockType& _lock;
-  bool _enabled;
+  LockType& lock_;
+  bool enabled_;
 
  public:
   template <class T>
-  LockHolder(T& t) : _lock(extract(t)._lock), _enabled(true) {}
+  LockHolder(T& t) : lock_(extract(t).lock_), enabled_(true) {}
 
-  LockHolder(LockHolder& holder) : _lock(holder._lock), _enabled(true) {}
+  LockHolder(LockHolder& holder) : lock_(holder.lock_), enabled_(true) {}
 
-  LockHolder(LockType& lock) : _lock(lock), _enabled(true) {}
+  LockHolder(LockType& lock) : lock_(lock), enabled_(true) {}
 
-  void disable() { _enabled = false; }
+  void Disable() { enabled_ = false; }
 
-  bool isDisabled() { return !_enabled; }
+  bool IsDisabled() { return !enabled_; }
 
-  LockType& getLock() { return _lock; }
+  LockType& GetLock() { return lock_; }
 
  protected:
   template <class T>
@@ -93,16 +93,16 @@ template <class Scope1, class Scope2>
 class CompoundScope {
  public:
   template <class LockType>
-  static void createScope(LockHolder<LockType>& l) {
-    Scope1::createScope(l);
-    Scope2::createScope(l);
+  static void CreateScope(LockHolder<LockType>& l) {
+    Scope1::CreateScope(l);
+    Scope2::CreateScope(l);
   }
 
   template <class LockType>
-  static bool createScope(LockHolder<LockType>& l, unsigned long ms) {
-    if (Scope1::createScope(l, ms))
-      if (!Scope2::createScope(l, ms)) {
-        Scope1::destroyScope(l);
+  static bool CreateScope(LockHolder<LockType>& l, unsigned long ms) {
+    if (Scope1::CreateScope(l, ms))
+      if (!Scope2::CreateScope(l, ms)) {
+        Scope1::DestroyScope(l);
         return false;
       }
 
@@ -110,9 +110,9 @@ class CompoundScope {
   }
 
   template <class LockType>
-  static void destroyScope(LockHolder<LockType>& l) {
-    Scope1::destroyScope(l);
-    Scope2::destroyScope(l);
+  static void DestroyScope(LockHolder<LockType>& l) {
+    Scope1::DestroyScope(l);
+    Scope2::DestroyScope(l);
   }
 };
 
@@ -122,8 +122,8 @@ class CompoundScope {
  * @date <2003-07-16T17:55:42-0400>
  * @version 2.2.0
  *
- * Locking policy for Lockable objects. This policy acquire()s a Lockable
- * when the protection scope is created, and it release()s a Lockable
+ * Locking policy for Lockable objects. This policy Acquire()s a Lockable
+ * when the protection scope is created, and it Release()s a Lockable
  * when the scope is destroyed.
  */
 class LockedScope {
@@ -135,9 +135,9 @@ class LockedScope {
    * @param lock1 LockType1& is the LockHolder that holds the desired lock
    * @param lock2 LockType1& is the LockHolder that wants to share
   template <class LockType1, class LockType2>
-  static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
+  static void ShareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
 
-    l2.getLock().acquire();
+    l2.getLock().Acquire();
 
   }
    */
@@ -148,8 +148,8 @@ class LockedScope {
    * @param lock LockType& is a type of LockHolder.
    */
   template <class LockType>
-  static bool createScope(LockHolder<LockType>& l, unsigned long ms) {
-    return l.getLock().TryAcquire(ms);
+  static bool CreateScope(LockHolder<LockType>& l, unsigned long ms) {
+    return l.GetLock().TryAcquire(ms);
   }
 
   /**
@@ -158,8 +158,8 @@ class LockedScope {
    * @param lock LockType& is a type of LockHolder.
    */
   template <class LockType>
-  static void createScope(LockHolder<LockType>& l) {
-    l.getLock().Acquire();
+  static void CreateScope(LockHolder<LockType>& l) {
+    l.GetLock().Acquire();
   }
 
   /**
@@ -168,8 +168,8 @@ class LockedScope {
    * @param lock LockType& is a type of LockHolder.
    */
   template <class LockType>
-  static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().Release();
+  static void DestroyScope(LockHolder<LockType>& l) {
+    l.GetLock().Release();
   }
 };
 
@@ -179,8 +179,8 @@ class LockedScope {
  * @date <2003-07-16T17:55:42-0400>
  * @version 2.2.0
  *
- * Locking policy for Lockable objects. This policy release()s a Lockable
- * when the protection scope is created, and it acquire()s a Lockable
+ * Locking policy for Lockable objects. This policy Release()s a Lockable
+ * when the protection scope is created, and it Acquire()s a Lockable
  * when the scope is destroyed.
  */
 class UnlockedScope {
@@ -193,8 +193,8 @@ class UnlockedScope {
    * @param lock2 LockType1& is the LockHolder that wants to share
    */
   template <class LockType1, class LockType2>
-  static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-    l2.getLock().Release();
+  static void ShareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
+    l2.GetLock().Release();
   }
 
   /**
@@ -202,9 +202,9 @@ class UnlockedScope {
    *
    * @param lock LockType& is a type of LockHolder.
   template <class LockType>
-  static void createScope(LockHolder<LockType>& l) {
+  static void CreateScope(LockHolder<LockType>& l) {
 
-    l.getLock().release();
+    l.getLock().Release();
 
   }
    */
@@ -215,8 +215,8 @@ class UnlockedScope {
    * @param lock LockType& is a type of LockHolder.
    */
   template <class LockType>
-  static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().Acquire();
+  static void DestroyScope(LockHolder<LockType>& l) {
+    l.GetLock().Acquire();
   }
 };
 
@@ -238,18 +238,18 @@ class TimedLockedScope {
    * @param lock LockType& is a type of LockHolder.
    */
   template <class LockType1, class LockType2>
-  static void shareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
-    if (!l2.getLock().tryAcquire(TimeOut)) throw TimeoutException();
+  static void ShareScope(LockHolder<LockType1>& l1, LockHolder<LockType2>& l2) {
+    if (!l2.GetLock().TryAcquire(TimeOut)) throw TimeoutException();
   }
 
   template <class LockType>
-  static void createScope(LockHolder<LockType>& l) {
-    if (!l.getLock().tryAcquire(TimeOut)) throw TimeoutException();
+  static void CreateScope(LockHolder<LockType>& l) {
+    if (!l.GetLock().TryAcquire(TimeOut)) throw TimeoutException();
   }
 
   template <class LockType>
-  static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().release();
+  static void DestroyScope(LockHolder<LockType>& l) {
+    l.GetLock().Release();
   }
 };
 
@@ -265,17 +265,17 @@ class TimedLockedScope {
 class OverlappedScope {
  public:
   template <class LockType1, class LockType2>
-  static void transferScope(LockHolder<LockType1>& l1,
+  static void TransferScope(LockHolder<LockType1>& l1,
                             LockHolder<LockType2>& l2) {
-    l1.getLock().acquire();
+    l1.GetLock().Acquire();
 
-    l2.getLock().release();
-    l2.disable();
+    l2.GetLock().Release();
+    l2.Disable();
   }
 
   template <class LockType>
-  static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().release();
+  static void DestroyScope(LockHolder<LockType>& l) {
+    l.GetLock().Release();
   }
 };
 
@@ -342,7 +342,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    * @post the protection scope may be ended prematurely
    */
   Guard(LockType& lock) : LockHolder<LockType>(lock) {
-    LockingPolicy::createScope(*this);
+    LockingPolicy::CreateScope(*this);
   };
 
   /**
@@ -355,7 +355,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    * @post the protection scope may be ended prematurely
    */
   Guard(LockType& lock, unsigned long timeout) : LockHolder<LockType>(lock) {
-    if (!LockingPolicy::createScope(*this, timeout)) throw TimeoutException();
+    if (!LockingPolicy::CreateScope(*this, timeout)) throw TimeoutException();
   };
 
   /**
@@ -368,7 +368,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    */
   template <class U, class V>
   Guard(Guard<U, V>& g) : LockHolder<LockType>(g) {
-    LockingPolicy::shareScope(*this, this->extract(g));
+    LockingPolicy::ShareScope(*this, this->extract(g));
   }
 
   /**
@@ -380,7 +380,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    * protection scope.
    */
   Guard(Guard& g) : LockHolder<LockType>(g) {
-    LockingPolicy::shareScope(*this, g);
+    LockingPolicy::ShareScope(*this, g);
   }
 
   /**
@@ -393,7 +393,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    */
   template <class U, class V>
   Guard(Guard<U, V>& g, LockType& lock) : LockHolder<LockType>(lock) {
-    LockingPolicy::transferScope(*this, this->extract(g));
+    LockingPolicy::TransferScope(*this, this->extract(g));
   }
 
   /**
@@ -405,7 +405,7 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
    * protection scope.
    */
   Guard(Guard& g, LockType& lock) : LockHolder<LockType>(lock) {
-    LockingPolicy::transferScope(*this, g);
+    LockingPolicy::TransferScope(*this, g);
   }
 
   /**
@@ -418,11 +418,10 @@ class Guard : private LockHolder<LockType>, private NonCopyable {
 template <class LockType, class LockingPolicy>
 Guard<LockType, LockingPolicy>::~Guard() throw() {
   try {
-    if (!this->isDisabled()) LockingPolicy::destroyScope(*this);
-
+    if (!this->IsDisabled()) LockingPolicy::DestroyScope(*this);
   } catch (...) { /* ignore */
   }
 }
-};
+}; // namespace zthread
 
 #endif  // __ZTGUARD_H__

@@ -64,7 +64,7 @@ int PrioritySemaphore::count() { return _impl->Count(); }
 // Locakable compatibility
 //
 
-void PrioritySemaphore::acquire() { _impl->Acquire(); }
+void PrioritySemaphore::Acquire() { _impl->Acquire(); }
 
 bool PrioritySemaphore::tryAcquire(unsigned long ms) {
   return _impl->TryAcquire(ms);

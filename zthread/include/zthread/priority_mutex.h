@@ -48,7 +48,7 @@ class PriorityMutexImpl;
  *
  * <b>Scheduling</b>
  *
- * Threads competing to acquire() a Mutex are granted access in order of
+ * Threads competing to Acquire() a Mutex are granted access in order of
  * priority. Threads
  * with a higher priority will be given access first.
  */
@@ -67,9 +67,9 @@ class ZTHREAD_API PriorityMutex : public Lockable, private NonCopyable {
   virtual ~PriorityMutex();
 
   /**
-   * @see Mutex::acquire()
+   * @see Mutex::Acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * @see Mutex::tryAcquire(unsigned long timeout)

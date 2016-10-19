@@ -42,15 +42,14 @@ class FastRecursiveLock;
  * @version 2.2.0
  *
  * A FastRecursiveMutex is a small fast implementation of a recursive, mutally
- * exclusive
- * Lockable object. This implementation is a bit faster than the other Mutex
- * classes
- * as it involved the least overhead. However, this slight increase in speed is
- * gained by sacrificing the robustness provided by the other classes.
+ * exclusive Lockable object. This implementation is a bit faster than the 
+ * other Mutex classes as it involved the least overhead. However, this slight 
+ * increase in speed is gained by sacrificing the robustness provided by the 
+ * other classes.
  *
  * A FastRecursiveMutex has the useful property of not being interruptable; that
- * is to say
- * that acquire() and tryAcquire() will not throw Interrupted_Exceptions.
+ * is to say that Acquire() and tryAcquire() will not throw 
+ * InterruptedExceptions.
  *
  * @see RecursiveMutex
  *
@@ -64,7 +63,7 @@ class FastRecursiveLock;
  * deadlock.
  */
 class ZTHREAD_API FastRecursiveMutex : public Lockable, private NonCopyable {
-  FastRecursiveLock* _lock;
+  FastRecursiveLock* lock_;
 
  public:
   //! Create a new FastRecursiveMutex
@@ -75,30 +74,26 @@ class ZTHREAD_API FastRecursiveMutex : public Lockable, private NonCopyable {
 
   /**
    * Acquire exclusive access to the mutex. The calling thread will block until
-   * the
-   * lock can be acquired. No safety or state checks are performed. The calling
-   * thread
-   * may acquire the mutex nore than once.
+   * the lock can be acquired. No safety or state checks are performed. The 
+   * calling thread may acquire the mutex more than once.
    *
    * @post The calling thread obtains the lock successfully if no exception is
    * thrown.
    * @exception Interrupted_Exception never thrown
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * Release access. No safety or state checks are performed.
    *
    * @pre the caller should have previously acquired this lock at least once.
    */
-  virtual void release();
+  virtual void Release();
 
   /**
    * Try to acquire exclusive access to the mutex. The calling thread will block
-   * until the
-   * lock can be acquired. No safety or state checks are performed. The calling
-   * thread
-   * may acquire the mutex more than once.
+   * until the lock can be acquired. No safety or state checks are performed.
+   * The calling thread may acquire the mutex more than once.
    *
    * @param timeout unused
    * @return
@@ -107,11 +102,11 @@ class ZTHREAD_API FastRecursiveMutex : public Lockable, private NonCopyable {
    *
    * @post The calling thread obtains the lock successfully if no exception is
    * thrown.
-   * @exception Interrupted_Exception never thrown
+   * @exception InterruptedException never thrown
    */
-  virtual bool tryAcquire(unsigned long timeout);
+  virtual bool TryAcquire(unsigned long timeout);
 };
 
-}  // namespace ZThread
+}  // namespace zthread
 
 #endif  // __ZTFASTRECURSIVEMUTEX_H__

@@ -66,7 +66,7 @@ class ZTHREAD_API RecursiveMutexImpl {
 
   virtual ~RecursiveMutexImpl();
 
-  void acquire();
+  void Acquire();
 
   bool tryAcquire(unsigned long);
 

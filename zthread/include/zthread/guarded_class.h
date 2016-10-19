@@ -49,20 +49,20 @@ class GuardedClass {
   class TransferedScope {
    public:
     template <class LockType1, class LockType2>
-    static void shareScope(LockHolder<LockType1>& l1,
+    static void ShareScope(LockHolder<LockType1>& l1,
                            LockHolder<LockType2>& l2) {
-      l1.disable();
-      l2.getLock().acquire();
+      l1.Disable();
+      l2.GetLock().Acquire();
     }
 
     template <class LockType1>
-    static void createScope(LockHolder<LockType1>& l) {
+    static void CreateScope(LockHolder<LockType1>& l) {
       // Don't acquire the lock when scope the Guard is created
     }
 
     template <class LockType1>
-    static void destroyScope(LockHolder<LockType1>& l) {
-      l.getLock().release();
+    static void DestroyScope(LockHolder<LockType1>& l) {
+      l.GetLock().release();
     }
   };
 

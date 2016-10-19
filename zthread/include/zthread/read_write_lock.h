@@ -65,7 +65,7 @@ class ReadWriteLock : public NonCopyable {
    * @return <em>Lockable&</em> reference to a Lockable that provides read-only
    *         access.
    */
-  virtual Lockable& getReadLock() = 0;
+  virtual Lockable& GetReadLock() = 0;
 
   /**
    * Get a reference to the read-write Lockable.
@@ -73,10 +73,10 @@ class ReadWriteLock : public NonCopyable {
    * @return <em>Lockable&</em> reference to a Lockable that provides read-write
    *         access.
    */
-  virtual Lockable& getWriteLock() = 0;
+  virtual Lockable& GetWriteLock() = 0;
 
 }; /* ReadWriteLock */
 
-};  // __ZTREADWRITELOCK_H__
+}; // namespace zthread
 
-#endif
+#endif // __ZTREADWRITELOCK_H__

@@ -97,9 +97,9 @@ class ZTHREAD_API PrioritySemaphore : public Lockable, private NonCopyable {
   virtual bool tryAcquire(unsigned long timeout);
 
   /**
-   * @see Semaphore::acquire()
+   * @see Semaphore::Acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * @see Semaphore::release()

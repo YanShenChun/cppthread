@@ -46,13 +46,13 @@ namespace zthread {
 class DeferredInterruptionScope {
  public:
   template <class LockType>
-  static void createScope(LockHolder<LockType>& l) {
-    l.getLock().interest(Monitor::SIGNALED);
+  static void CreateScope(LockHolder<LockType>& l) {
+    l.GetLock().interest(Monitor::SIGNALED);
   }
 
   template <class LockType>
-  static void destroyScope(LockHolder<LockType>& l) {
-    l.getLock().interest(Monitor::ANYTHING);
+  static void DestroyScope(LockHolder<LockType>& l) {
+    l.GetLock().interest(Monitor::ANYTHING);
   }
 };
 }

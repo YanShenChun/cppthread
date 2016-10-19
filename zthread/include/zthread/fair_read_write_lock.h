@@ -49,85 +49,83 @@ namespace zthread {
  * @see ReadWriteLock
  */
 class FairReadWriteLock : public ReadWriteLock {
-  Mutex _lock;
-  Condition _cond;
+  Mutex lock_;
+  Condition cond_;
 
-  volatile int _readers;
+  volatile int readers_;
 
   //! @class ReadLock
   class ReadLock : public Lockable {
-    FairReadWriteLock& _rwlock;
+    FairReadWriteLock& rwlock_;
 
    public:
-    ReadLock(FairReadWriteLock& rwlock) : _rwlock(rwlock) {}
+    ReadLock(FairReadWriteLock& rwlock) : rwlock_(rwlock) {}
 
     virtual ~ReadLock() {}
 
     virtual void Acquire() {
-      Guard<Mutex> g(_rwlock._lock);
-      ++_rwlock._readers;
+      Guard<Mutex> g(rwlock_.lock_);
+      ++rwlock_.readers_;
     }
 
     virtual bool TryAcquire(unsigned long timeout) {
-      if (!_rwlock._lock.TryAcquire(timeout)) return false;
+      if (!rwlock_.lock_.TryAcquire(timeout)) return false;
 
-      ++_rwlock._readers;
-      _rwlock._lock.Release();
+      ++rwlock_.readers_;
+      rwlock_.lock_.Release();
 
       return true;
     }
 
     virtual void Release() {
-      Guard<Mutex> g(_rwlock._lock);
-      --_rwlock._readers;
+      Guard<Mutex> g(rwlock_.lock_);
+      --rwlock_.readers_;
 
-      if (_rwlock._readers == 0) _rwlock._cond.Signal();
+      if (rwlock_.readers_ == 0) rwlock_.cond_.Signal();
     }
   };
 
   //! @class WriteLock
   class WriteLock : public Lockable {
-    FairReadWriteLock& _rwlock;
+    FairReadWriteLock& rwlock_;
 
    public:
-    WriteLock(FairReadWriteLock& rwlock) : _rwlock(rwlock) {}
+    WriteLock(FairReadWriteLock& rwlock) : rwlock_(rwlock) {}
 
     virtual ~WriteLock() {}
 
     virtual void Acquire() {
-      _rwlock._lock.Acquire();
+      rwlock_.lock_.Acquire();
 
       try {
-        while (_rwlock._readers > 0) _rwlock._cond.Wait();
-
+        while (rwlock_.readers_ > 0) rwlock_.cond_.Wait();
       } catch (...) {
-        _rwlock._lock.Release();
+        rwlock_.lock_.Release();
         throw;
       }
     }
 
     virtual bool TryAcquire(unsigned long timeout) {
-      if (!_rwlock._lock.TryAcquire(timeout)) return false;
+      if (!rwlock_.lock_.TryAcquire(timeout)) return false;
 
       try {
-        while (_rwlock._readers > 0) _rwlock._cond.Wait(timeout);
-
+        while (rwlock_.readers_ > 0) rwlock_.cond_.Wait(timeout);
       } catch (...) {
-        _rwlock._lock.Release();
+        rwlock_.lock_.Release();
         throw;
       }
 
       return true;
     }
 
-    virtual void Release() { _rwlock._lock.Release(); }
+    virtual void Release() { rwlock_.lock_.Release(); }
   };
 
   friend class ReadLock;
   friend class WriteLock;
 
-  ReadLock _rlock;
-  WriteLock _wlock;
+  ReadLock rlock_;
+  WriteLock wlock_;
 
  public:
   /**
@@ -137,7 +135,7 @@ class FairReadWriteLock : public ReadWriteLock {
    *            allocated for this object.
    */
   FairReadWriteLock()
-      : _cond(_lock), _readers(0), _rlock(*this), _wlock(*this) {}
+      : cond_(lock_), readers_(0), rlock_(*this), wlock_(*this) {}
 
   //! Destroy this ReadWriteLock
   virtual ~FairReadWriteLock() {}
@@ -145,14 +143,14 @@ class FairReadWriteLock : public ReadWriteLock {
   /**
    * @see ReadWriteLock::getReadLock()
    */
-  virtual Lockable& getReadLock() { return _rlock; }
+  virtual Lockable& GetReadLock() { return rlock_; }
 
   /**
    * @see ReadWriteLock::getWriteLock()
    */
-  virtual Lockable& getWriteLock() { return _wlock; }
+  virtual Lockable& GetWriteLock() { return wlock_; }
 };
 
-};  // __ZTFAIRREADWRITELOCK_H__
+}; // namespace zthread
 
-#endif
+#endif // __ZTFAIRREADWRITELOCK_H__

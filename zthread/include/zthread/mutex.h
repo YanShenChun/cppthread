@@ -52,7 +52,7 @@ class FifoMutexImpl;
  *
  * <b>Scheduling</b>
  *
- * Threads competing to acquire() a Mutex are granted access in FIFO order.
+ * Threads competing to Acquire() a Mutex are granted access in FIFO order.
  *
  * <b>Error Checking</b>
  *
@@ -76,7 +76,7 @@ class ZTHREAD_API Mutex : public Lockable, private NonCopyable {
    * Acquire a Mutex, possibly blocking until either the current owner of the
    * Mutex releases it or until an exception is thrown.
    *
-   * Only one thread may acquire() the Mutex at any given time.
+   * Only one thread may Acquire() the Mutex at any given time.
    *
    * @exception Interrupted_Exception thrown when the calling thread is
    * interrupted.
@@ -91,7 +91,7 @@ class ZTHREAD_API Mutex : public Lockable, private NonCopyable {
    * @post the calling thread successfully acquired Mutex only if no exception
    *       was thrown.
    *
-   * @see Lockable::acquire()
+   * @see Lockable::Acquire()
    */
   virtual void Acquire();
 

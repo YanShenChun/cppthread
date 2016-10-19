@@ -29,16 +29,16 @@
 
 namespace zthread {
 
-FastMutex::FastMutex() : _lock(new FastLock) {}
+FastMutex::FastMutex() : lock_(new FastLock) {}
 
-FastMutex::~FastMutex() { delete _lock; }
+FastMutex::~FastMutex() { delete lock_; }
 
-void FastMutex::Acquire() { _lock->Acquire(); }
+void FastMutex::Acquire() { lock_->Acquire(); }
 
 bool FastMutex::TryAcquire(unsigned long timeout) {
-  return _lock->TryAcquire(timeout);
+  return lock_->TryAcquire(timeout);
 }
 
-void FastMutex::Release() { _lock->Release(); }
+void FastMutex::Release() { lock_->Release(); }
 
 }  // namespace ZThread

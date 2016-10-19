@@ -96,7 +96,7 @@ class FastRecursiveLock : private NonCopyable {
    *
    * @exception None
    */
-  inline void acquire() {
+  inline void Acquire() {
     DWORD id = ::GetCurrentThreadId();
 
     // Take ownership if the lock is free or owned by the calling thread
@@ -117,7 +117,7 @@ class FastRecursiveLock : private NonCopyable {
    *
    * @exception None
    */
-  inline void release() {
+  inline void Release() {
     if (--_count == 0) ::InterlockedExchange(const_cast<LPLONG>(&_lock), 0);
   }
 
@@ -129,7 +129,7 @@ class FastRecursiveLock : private NonCopyable {
    * @return bool
    * @exception Synchronization_Exception - not thrown
    */
-  inline bool tryAcquire(unsigned long timeout = 0) {
+  inline bool TryAcquire(unsigned long timeout = 0) {
     DWORD id = ::GetCurrentThreadId();
     DWORD owner =
         (DWORD)::InterlockedCompareExchange(const_cast<LPLONG>(&_lock), id, 0);

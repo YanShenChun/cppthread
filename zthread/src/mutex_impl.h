@@ -85,7 +85,7 @@ class MutexImpl : Behavior {
 
   ~MutexImpl();
 
-  void acquire();
+  void Acquire();
 
   void release();
 
@@ -119,14 +119,14 @@ MutexImpl<List, Behavior>::~MutexImpl() {
  * thread holds an exclusive lock on this mutex, otherwise it is blocked
  * until the lock can be acquired.
  *
- * @exception Deadlock_Exception thrown when the caller attempts to acquire()
+ * @exception Deadlock_Exception thrown when the caller attempts to Acquire()
  * more
  * than once, If the checking flag is set.
  * @exception Interrupted_Exception thrown when the caller status is interrupted
  * @exception Synchronization_Exception thrown if there is some other error.
  */
 template <typename List, typename Behavior>
-void MutexImpl<List, Behavior>::acquire() {
+void MutexImpl<List, Behavior>::Acquire() {
   ThreadImpl* self = ThreadImpl::current();
   Monitor& m = self->getMonitor();
 
@@ -196,7 +196,7 @@ void MutexImpl<List, Behavior>::acquire() {
  * thread holds an exclusive lock on this mutex. If the lock cannot be
  * obtained before the timeout expires, the caller returns false.
  *
- * @exception Deadlock_Exception thrown when the caller attempts to acquire()
+ * @exception Deadlock_Exception thrown when the caller attempts to Acquire()
  * more
  * than once, If the checking flag is set.
  * @exception Interrupted_Exception thrown when the caller status is interrupted

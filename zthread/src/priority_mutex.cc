@@ -39,7 +39,7 @@ PriorityMutex::~PriorityMutex() {
 }
 
 // P
-void PriorityMutex::acquire() { _impl->acquire(); }
+void PriorityMutex::Acquire() { _impl->Acquire(); }
 
 // P
 bool PriorityMutex::tryAcquire(unsigned long ms) {

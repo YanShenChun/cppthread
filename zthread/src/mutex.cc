@@ -38,7 +38,7 @@ Mutex::~Mutex() {
 }
 
 // P
-void Mutex::Acquire() { _impl->acquire(); }
+void Mutex::Acquire() { _impl->Acquire(); }
 
 // P
 bool Mutex::TryAcquire(unsigned long ms) { return _impl->tryAcquire(ms); }

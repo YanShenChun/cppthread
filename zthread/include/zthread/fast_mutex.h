@@ -40,15 +40,12 @@ class FastLock;
  * @version 2.2.0
  *
  * A FastMutex is a small fast implementation of a non-recursive, mutually
- * exclusive
- * Lockable object. This implementation is a bit faster than the other Mutex
- * classes
- * as it involved the least overhead. However, this slight increase in speed is
- * gained by sacrificing the robustness provided by the other classes.
- *
- * A FastMutex has the useful property of not being interruptable; that is to
- * say
- * that acquire() and tryAcquire() will not throw Interrupted_Exceptions.
+ * exclusive Lockable object. This implementation is a bit faster than the other
+ * Mutex classes as it involved the least overhead. However, this slight 
+ * increase in speed is gained by sacrificing the robustness provided by the 
+ * other classes. A FastMutex has the useful property of not being interruptable; 
+ * that is to say that Acquire() and tryAcquire() will not throw 
+ * InterruptedExceptions.
  *
  * @see Mutex
  *
@@ -62,7 +59,7 @@ class FastLock;
  * deadlock.
  */
 class ZTHREAD_API FastMutex : public Lockable, private NonCopyable {
-  FastLock* _lock;
+  FastLock* lock_;
 
  public:
   //! Create a FastMutex
@@ -73,14 +70,11 @@ class ZTHREAD_API FastMutex : public Lockable, private NonCopyable {
 
   /**
    * Acquire exclusive access to the mutex. The calling thread will block until
-   * the
-   * lock can be acquired. No safety or state checks are performed.
+   * the lock can be acquired. No safety or state checks are performed.
    *
    * @pre The calling thread should <i>not</i> have previously acquired this
-   * lock.
-   *      Deadlock will result if the same thread attempts to acquire the mutex
-   * more
-   *      than once.
+   * lock. Deadlock will result if the same thread attempts to acquire the mutex
+   * more than once.
    *
    * @post The calling thread obtains the lock successfully if no exception is
    * thrown.
@@ -97,14 +91,11 @@ class ZTHREAD_API FastMutex : public Lockable, private NonCopyable {
 
   /**
    * Try to acquire exclusive access to the mutex. The calling thread will block
-   * until the
-   * lock can be acquired. No safety or state checks are performed.
+   * until the lock can be acquired. No safety or state checks are performed.
    *
    * @pre The calling thread should <i>not</i> have previously acquired this
-   * lock.
-   *      Deadlock will result if the same thread attempts to acquire the mutex
-   * more
-   *      than once.
+   * lock. Deadlock will result if the same thread attempts to acquire the mutex
+   * more than once.
    *
    * @param timeout unused
    * @return
@@ -118,6 +109,6 @@ class ZTHREAD_API FastMutex : public Lockable, private NonCopyable {
   virtual bool TryAcquire(unsigned long timeout);
 
 }; /* FastMutex */
-};
+}; // namespace zthread
 
 #endif  // __ZTFASTMUTEX_H__

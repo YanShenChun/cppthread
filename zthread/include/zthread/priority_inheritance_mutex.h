@@ -50,13 +50,13 @@ class PriorityInheritanceMutexImpl;
  *
  * <b>Scheduling</b>
  *
- * Threads competing to acquire() a PriorityInheritanceMutex are granted access
+ * Threads competing to Acquire() a PriorityInheritanceMutex are granted access
  * in
  * order of priority. Threads with a higher priority will be given access first.
  *
- * When a higher priority thread tries to acquire() a PriorityInheritanceMutex
+ * When a higher priority thread tries to Acquire() a PriorityInheritanceMutex
  * and is
- * about to be blocked by a lower priority thread that has already acquire()d
+ * about to be blocked by a lower priority thread that has already Acquire()d
  * it, the
  * lower priority thread will temporarily have its effective priority raised to
  * that
@@ -80,9 +80,9 @@ class ZTHREAD_API PriorityInheritanceMutex : public Lockable,
   virtual ~PriorityInheritanceMutex();
 
   /**
-   * @see Mutex::acquire()
+   * @see Mutex::Acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * @see Mutex::tryAcquire(unsigned long timeout)

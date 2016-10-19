@@ -29,16 +29,16 @@
 
 namespace zthread {
 
-FastRecursiveMutex::FastRecursiveMutex() : _lock(new FastRecursiveLock) {}
+FastRecursiveMutex::FastRecursiveMutex() : lock_(new FastRecursiveLock) {}
 
-FastRecursiveMutex::~FastRecursiveMutex() { delete _lock; }
+FastRecursiveMutex::~FastRecursiveMutex() { delete lock_; }
 
-void FastRecursiveMutex::acquire() { _lock->acquire(); }
+void FastRecursiveMutex::Acquire() { lock_->Acquire(); }
 
-bool FastRecursiveMutex::tryAcquire(unsigned long timeout) {
-  return _lock->tryAcquire(timeout);
+bool FastRecursiveMutex::TryAcquire(unsigned long timeout) {
+  return lock_->TryAcquire(timeout);
 }
 
-void FastRecursiveMutex::release() { _lock->release(); }
+void FastRecursiveMutex::Release() { lock_->Release(); }
 
 }  // namespace ZThread

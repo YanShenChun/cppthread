@@ -75,7 +75,7 @@ class ZTHREAD_API Semaphore : public Lockable, private NonCopyable {
   /**
    * <i>Provided to reflect the traditional Semaphore semantics</i>
    *
-   * @see acquire()
+   * @see Acquire()
    */
   void wait();
 
@@ -135,9 +135,9 @@ class ZTHREAD_API Semaphore : public Lockable, private NonCopyable {
    *            A thread may be interrupted at any time, prematurely ending any
    * wait.
    *
-   * @see Lockable::acquire()
+   * @see Lockable::Acquire()
    */
-  virtual void acquire();
+  virtual void Acquire();
 
   /**
    * Increment the count, unblocking one thread if count is positive.

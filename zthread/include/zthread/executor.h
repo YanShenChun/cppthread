@@ -39,7 +39,7 @@ namespace zthread {
  * @date <2003-07-16T22:39:39-0400>
  * @version 2.3.0
  *
- * Execeutors are an implementation of the Executor pattern. This is
+ * Executors are an implementation of the Executor pattern. This is
  * a more versatile construct than a thread pool. A paper describing can
  * be found in the proceedings of the 2002 VikingPLOP conference.
  *
